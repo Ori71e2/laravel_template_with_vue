@@ -158,17 +158,19 @@ export default {
   }
   .url-box {
     border: solid 1px red;
-    background-color: #ffffff;
-    // display: block;
-    position: relative;
-    text-align: center;
-    // vertical-align: middle;
-    text-decoration: none;
-    width: 80px;
-    line-height: 45px;
-    height: 45px;
-    font-size: 14px;
     border-radius: 2px;
+    margin: 1px;
+    background-color: #ffffff;
+    width: 90px;
+    height: 45px;
+    display: block;
+    position: relative;
+    // 字体设置
+    text-decoration: none;
+    line-height: 45px;
+    font-size: 14px;
+    text-align: center;
+    font-family: 'Microsoft Yahei', sans-serif;
     color: #474a4d;
     // div内文字不溢出，溢出部分用...代替
     word-break: keep-all;
@@ -176,10 +178,14 @@ export default {
     overflow: hidden;
     text-overflow: ellipsis;
     z-index: 10;
-    :link, :visited {
-      transition-property: background-color, color, font-size;
-      transition-duration: 0.2s;
-      transition-timing-function: ease;
+    &:hover {
+      font-size: 110%;
+      color: #ffffff;
+      background-color: #474a4d;
+      // box-shadow: 0px 3px 10px 0px rgba(0, 0, 0, 0.2);
+    }
+    &:nth-child(3n+3) {
+      margin-right: 52px;
     }
   }
 </style>
