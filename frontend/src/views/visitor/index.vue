@@ -62,20 +62,9 @@
         </el-dropdown>
         <span>王小虎</span>
       </el-header>
-      <el-main>
-        <div class="url-page-list">
-          <div v-for="(urlPage, index) in urlPageList" :key="index" class="url-page">
-            <span>{{ urlPage.title }}</span>
-            <br>
-            <div class="page">
-              <div v-for="(url, index) in urlPage.urlList" :key="index" class="url-box">
-                <a href=url.url target="_blank">
-                  <span>{{ url.title }}</span>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
+      <el-main class="main">
+        <!-- {{ urlPageList }} -->
+        <url v-bind:list.sync="urlPageList" />
       </el-main>
     </el-container>
   </el-container>
@@ -84,7 +73,11 @@
 <script>
 import { getUrlPageList } from '@/api/url'
 import axios from 'axios'
+import url from './url'
 export default {
+  components: {
+    url
+  },
   data() {
     const item = {
       date: '2016-05-02',
@@ -139,53 +132,7 @@ export default {
     padding: 10px 0;
     background-color: #f9fafc;
   }
-  .url-page-list {
-    width: 1000px;
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    margin: 10px auto;
-  }
-  .url-page {
-    .page {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      justify-content: flex-start;
-      margin: 8px;
-      border: solid 1px red;
-    }
-  }
-  .url-box {
-    border: solid 1px red;
-    border-radius: 2px;
-    margin: 1px;
-    background-color: #ffffff;
-    width: 90px;
-    height: 45px;
-    display: block;
-    position: relative;
-    // 字体设置
-    text-decoration: none;
-    line-height: 45px;
-    font-size: 14px;
-    text-align: center;
-    font-family: 'Microsoft Yahei', sans-serif;
-    color: #474a4d;
-    // div内文字不溢出，溢出部分用...代替
-    word-break: keep-all;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    z-index: 10;
-    &:hover {
-      font-size: 110%;
-      color: #ffffff;
-      background-color: #474a4d;
-      // box-shadow: 0px 3px 10px 0px rgba(0, 0, 0, 0.2);
-    }
-    &:nth-child(3n+3) {
-      margin-right: 52px;
-    }
+  .main {
+    background-color: #F5F6F8;
   }
 </style>
