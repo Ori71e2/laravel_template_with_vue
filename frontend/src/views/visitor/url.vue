@@ -1,23 +1,25 @@
 
 <template>
-  <div :style="urlPageListStyle" class="url-page-list" ref="urlPageList">
+  <div :style="urlListStyle" class="url-list">
     {{ windowWidth }}
-    <draggable v-model="urlPageList" v-bind="fatherDragOptions" :move="onMove" element="div" @start="fatherStart" @end="fatherEnd" ref="urlPage">
-      <div v-for="(urlPage, index) in urlPageList" :key="index"  :style="urlPageStyle" class="url-page">
-        <div :style="urlPageTitleStyle" class="url-page-title">
-          <span>{{ urlPage.title }}</span>
+    <div v-for="(urlPage, index) in urlList" :key="index">
+      <draggable v-model="urlPage.page" v-bind="fatherDragOptions" :move="onMove" element="div" @start="fatherStart" @end="fatherEnd">
+        <div v-for="(urlGroup, index) in urlPage.page" :key="index"  :style="urlGroupStyle" class="url-group">
+          <div :style="urlGroupTitleStyle" class="url-group-title">
+            <span>{{ urlGroup.title }}</span>
+          </div>
+          <draggable v-model="urlGroup.group" v-bind="childDragOptions" :move="onMove" element="div" @start="childStart" @end="childEnd" :class="pageClass">
+            <transition v-for="(url, index) in urlGroup.group" :key="index" name="fade" >
+              <div :style="boxStyle" class="url-box">
+                <a href=url.url target="_blank">
+                  <span>{{ url.title }}{{ index }}</span>
+                </a>
+              </div>
+            </transition>
+          </draggable>
         </div>
-        <draggable v-model="urlPage.urlList" v-bind="childDragOptions" :move="onMove" element="div" @start="childStart" @end="childEnd" :class="pageClass">
-          <transition v-for="(url, index) in urlPage.urlList" :key="index" name="fade" >
-            <div :style="boxStyle" class="url-box">
-              <a href=url.url target="_blank">
-                <span>{{ url.title }}</span>
-              </a>
-            </div>
-          </transition>
-        </draggable>
-      </div>
-    </draggable>
+      </draggable>
+    </div>
   </div>
 </template>>
 
@@ -55,7 +57,7 @@ export default {
     }
   },
   computed: {
-    urlPageList: {
+    urlList: {
       get() {
         return this.list
       },
@@ -92,10 +94,10 @@ export default {
       }
       return pageItem[this.unitnum - 1][this.colnum - 1]
     },
-    urlPageTitleStyle: function() {
+    urlGroupTitleStyle: function() {
       return { width: this.boxWidth + 'px' }
     },
-    urlPageStyle: function() {
+    urlGroupStyle: function() {
       return { borderWidth: this.urlPageBorder + 'px'}
     },
     colnum() {
@@ -106,7 +108,7 @@ export default {
       let num = Math.floor((this.windowWidth - boxBase1 + boxBase2 - boxToUrlPage - base) / ((this.unitnum-1)*boxBase1 + boxBase2))
       return num
     },
-    urlPageListStyle: function() {
+    urlListStyle: function() {
       const boxBase1 = (this.boxWidth + (this.boxMarginLR + this.boxBorder + this.boxPaddingLR)*2)
       const boxBase2 = (this.boxWidth + (this.boxPaddingLR + this.boxBorder)*2 + this.UCBoxMarginR + this.boxMarginLR) 
       const boxToUrlPage = this.urlPageBorder * 2
@@ -130,14 +132,18 @@ export default {
   },
   created() {
     this.getWindowWidth()
-    window.addEventListener('resize', () => {
-      this.windowWidth = document.body.clientWidth
-      console.log(document.body.clientWidth)
-    })
+    window.addEventListener('resize', this.handleWindowResize, false)
   },
   mounted() {
   },
+  destroyed() {
+     window.removeEventListener('resize', this.handleWindowResize)
+  },
   methods: {
+    handleWindowResize() {
+      this.windowWidth = document.body.clientWidth
+      console.log(document.body.clientWidth)
+    },
     onMove({ relatedContext, draggedContext }) {
       const relatedElement = relatedContext.element
       const draggedElement = draggedContext.element
@@ -169,17 +175,17 @@ export default {
   $boxBorder: 1px;
   $boxMarginLR: 1px;
   $UCBoxMarginR: 50px;
-  .url-page-list {
+  .url-list {
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
     margin: 0px auto;
   }
-  .url-page {
+  .url-group {
     border-width: 1px;
     border-style: solid;
     border-color: red;
-    .url-page-title {
+    .url-group-title {
       border: solid $boxBorder red;
       border-radius: 2px;
       margin-left: $boxMarginLR;

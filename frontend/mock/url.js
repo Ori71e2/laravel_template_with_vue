@@ -16,29 +16,37 @@ export default [
       //   }
       // }
 
-      var urlPageList = []
+      var urlList = []
       var images = [1,2,3].map(x=>Random.image('200x100', Random.color(), Random.word(2,6)));
-      for (var k = 0; k< 40; k++) {
-        var data = []
-        for (var i = 0; i < 20; i++) {
-          var content = Random.cparagraph(0,10);
-          data.push({
-              id: i, 
-              title: Random.cword(2,5),
-              url: Random.domain(),
-              tag: Random.cword(2,6),
-              // images: images.slice(0,Random.integer(1,3))
+      for (var k = 0; k<8; k++) {
+        var page = []
+        for(var m = 0; m < 5; m++) {
+          var group = []
+          for (var i = 0; i < 20; i++) {
+            var content = Random.cparagraph(0,10);
+            group.push({
+                id: i, 
+                title: Random.cword(2,5),
+                url: Random.domain(),
+                tag: Random.cword(2,6),
+                // images: images.slice(0,Random.integer(1,3))
+            })
+          }
+          page.push({
+            id: m,
+            title: Random.cword(2,4),
+            group: group
           })
         }
-        urlPageList.push({
+        urlList.push({
           id: k,
           title: Random.cword(4,5),
-          urlList: data
+          page: page
         })
       }
       return {
         code: 20000,
-        data: urlPageList
+        data: urlList
       }
     }
   },

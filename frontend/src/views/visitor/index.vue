@@ -1,68 +1,72 @@
 
 <template>
   <el-container style="height: 100%; border: 1px solid #eee">
-    <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
-      <el-menu :default-openeds="['1', '3']">
-        <el-submenu index="1">
-          <template slot="title"><i class="el-icon-message"></i>导航一</template>
-          <el-menu-item-group>
-            <template slot="title">分组一</template>
-            <el-menu-item index="1-1">选项1</el-menu-item>
-            <el-menu-item index="1-2">选项2</el-menu-item>
-          </el-menu-item-group>
-          <el-menu-item-group title="分组2">
-            <el-menu-item index="1-3">选项3</el-menu-item>
-          </el-menu-item-group>
-          <el-submenu index="1-4">
-            <template slot="title">选项4</template>
-            <el-menu-item index="1-4-1">选项4-1</el-menu-item>
-          </el-submenu>
-        </el-submenu>
-        <el-submenu index="2">
-          <template slot="title"><i class="el-icon-menu"></i>导航二</template>
-          <el-menu-item-group>
-            <template slot="title">分组一</template>
-            <el-menu-item index="2-1">选项1</el-menu-item>
-            <el-menu-item index="2-2">选项2</el-menu-item>
-          </el-menu-item-group>
-          <el-menu-item-group title="分组2">
-            <el-menu-item index="2-3">选项3</el-menu-item>
-          </el-menu-item-group>
-          <el-submenu index="2-4">
-            <template slot="title">选项4</template>
-            <el-menu-item index="2-4-1">选项4-1</el-menu-item>
-          </el-submenu>
-        </el-submenu>
-        <el-submenu index="3">
-          <template slot="title"><i class="el-icon-setting"></i>导航三</template>
-          <el-menu-item-group>
-            <template slot="title">分组一</template>
-            <el-menu-item index="3-1">选项1</el-menu-item>
-            <el-menu-item index="3-2">选项2</el-menu-item>
-          </el-menu-item-group>
-          <el-menu-item-group title="分组2">
-            <el-menu-item index="3-3">选项3</el-menu-item>
-          </el-menu-item-group>
-          <el-submenu index="3-4">
-            <template slot="title">选项4</template>
-            <el-menu-item index="3-4-1">选项4-1</el-menu-item>
-          </el-submenu>
-        </el-submenu>
-      </el-menu>
-    </el-aside>
-    <el-container>
-      <el-header style="text-align: right; font-size: 12px">
+    <el-header>
+      <div>
         <el-dropdown>
-          <i class="el-icon-setting" style="margin-right: 15px"></i>
+          <i class="el-icon-setting" style="margin-right: 10px"></i>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item>查看</el-dropdown-item>
             <el-dropdown-item>新增</el-dropdown-item>
             <el-dropdown-item>删除</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
-        <span>王小虎</span>
-      </el-header>
-      <el-main class="main">
+        <div style="width: 40px; margin: 0px 10px"><span>王小虎</span></div>
+      </div>
+      <div class="transiton"/>
+    </el-header>
+    <el-container>
+      <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
+        <el-menu :default-openeds="['1', '3']">
+          <el-submenu index="1">
+            <template slot="title"><i class="el-icon-message"></i>导航一</template>
+            <el-menu-item-group>
+              <template slot="title">分组一</template>
+              <el-menu-item index="1-1">选项1</el-menu-item>
+              <el-menu-item index="1-2">选项2</el-menu-item>
+            </el-menu-item-group>
+            <el-menu-item-group title="分组2">
+              <el-menu-item index="1-3">选项3</el-menu-item>
+            </el-menu-item-group>
+            <el-submenu index="1-4">
+              <template slot="title">选项4</template>
+              <el-menu-item index="1-4-1">选项4-1</el-menu-item>
+            </el-submenu>
+          </el-submenu>
+          <el-submenu index="2">
+            <template slot="title"><i class="el-icon-menu"></i>导航二</template>
+            <el-menu-item-group>
+              <template slot="title">分组一</template>
+              <el-menu-item index="2-1">选项1</el-menu-item>
+              <el-menu-item index="2-2">选项2</el-menu-item>
+            </el-menu-item-group>
+            <el-menu-item-group title="分组2">
+              <el-menu-item index="2-3">选项3</el-menu-item>
+            </el-menu-item-group>
+            <el-submenu index="2-4">
+              <template slot="title">选项4</template>
+              <el-menu-item index="2-4-1">选项4-1</el-menu-item>
+            </el-submenu>
+          </el-submenu>
+          <el-submenu index="3">
+            <template slot="title"><i class="el-icon-setting"></i>导航三</template>
+            <el-menu-item-group>
+              <template slot="title">分组一</template>
+              <el-menu-item index="3-1">选项1</el-menu-item>
+              <el-menu-item index="3-2">选项2</el-menu-item>
+            </el-menu-item-group>
+            <el-menu-item-group title="分组2">
+              <el-menu-item index="3-3">选项3</el-menu-item>
+            </el-menu-item-group>
+            <el-submenu index="3-4">
+              <template slot="title">选项4</template>
+              <el-menu-item index="3-4-1">选项4-1</el-menu-item>
+            </el-submenu>
+          </el-submenu>
+        </el-menu>
+      </el-aside>
+      <div class="nav"></div>
+      <el-main>
         <!-- {{ urlPageList }} -->
         <url v-bind:list.sync="urlPageList" />
       </el-main>
@@ -98,13 +102,56 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+$headerHeight: 80px;
   .el-header {
-    background-color: #B3C0D1;
-    color: #333;
-    line-height: 60px;
+    position:fixed;
+    top: 0;
+    width: 100%;
+    height: $headerHeight !important;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    align-items: center;
+    z-index: 100;
+    div:first-child {
+      height: $headerHeight - 20px;
+      width: 100%;
+      background-color: #B3C0D1;
+      color: #333;
+      line-height: $headerHeight - 20px;
+      text-align: right;
+      font-size: 12px;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      justify-content: flex-end;
+      align-items: center;
+    }
+    .transiton {
+      width: 100%;
+      height: 20px;
+      background-image: linear-gradient(to top, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1))
+    }
+  }
+  .el-main {
+    margin-top: $headerHeight;
+    background-color: #F5F6F8;
+    z-index: 99;
   }
   .el-aside {
     color: #333;
+    z-index: 99;
+  }
+  .nav {
+    position: fixed;
+    top: $headerHeight;
+    left: 20px;
+    width: 200px;
+    height: calc(100vh - #{$headerHeight} - 20px);
+    background-color: red;
+    z-index: 100;
   }
   .el-row {
     margin-bottom: 20px;
@@ -131,8 +178,5 @@ export default {
   .row-bg {
     padding: 10px 0;
     background-color: #f9fafc;
-  }
-  .main {
-    background-color: #F5F6F8;
   }
 </style>
