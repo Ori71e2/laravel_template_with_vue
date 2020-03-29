@@ -1,12 +1,13 @@
 
 <template>
-  <div :style="urlPageListStyle" class="url-page-list">
-    <draggable v-model="urlPageList" :options="fatherDragOptions" :move="onMove" element="div" @start="fatherStart" @end="fatherEnd">
+  <div :style="urlPageListStyle" class="url-page-list" ref="urlPageList">
+    {{ windowWidth }}
+    <draggable v-model="urlPageList" v-bind="fatherDragOptions" :move="onMove" element="div" @start="fatherStart" @end="fatherEnd" ref="urlPage">
       <div v-for="(urlPage, index) in urlPageList" :key="index"  :style="urlPageStyle" class="url-page">
         <div :style="urlPageTitleStyle" class="url-page-title">
           <span>{{ urlPage.title }}</span>
         </div>
-        <draggable v-model="urlPage.urlList" :options="childDragOptions" :move="onMove" element="div" @start="childStart" @end="childEnd" :class="pageClass">
+        <draggable v-model="urlPage.urlList" v-bind="childDragOptions" :move="onMove" element="div" @start="childStart" @end="childEnd" :class="pageClass">
           <transition v-for="(url, index) in urlPage.urlList" :key="index" name="fade" >
             <div :style="boxStyle" class="url-box">
               <a href=url.url target="_blank">
@@ -41,8 +42,10 @@ export default {
       fatherEditable: true,
       isDragging: false,
       delayedDragging: false,
+      windowWidth: 1000,
+      urlPageOffsetLeft: 0,
       unitnum: 3,
-      colnum: 4,
+      // colnum: 4,
       urlPageBorder: 1,
       boxWidth: 100,
       boxPaddingLR: 1,
@@ -95,10 +98,19 @@ export default {
     urlPageStyle: function() {
       return { borderWidth: this.urlPageBorder + 'px'}
     },
+    colnum() {
+      const boxBase1 = (this.boxWidth + (this.boxMarginLR + this.boxBorder + this.boxPaddingLR)*2)
+      const boxBase2 = (this.boxWidth + (this.boxPaddingLR + this.boxBorder)*2 + this.UCBoxMarginR + this.boxMarginLR)
+      const boxToUrlPage = this.urlPageBorder * 2
+      let base = 240
+      let num = Math.floor((this.windowWidth - boxBase1 + boxBase2 - boxToUrlPage - base) / ((this.unitnum-1)*boxBase1 + boxBase2))
+      return num
+    },
     urlPageListStyle: function() {
-      const width = ((this.unitnum-1)*this.colnum + 1)*(this.boxWidth + (this.boxMarginLR + this.boxBorder + this.boxPaddingLR)*2)
-               + (this.colnum - 1)*(this.boxWidth + (this.boxPaddingLR + this.boxBorder)*2 + this.UCBoxMarginR + this.boxMarginLR) 
-               + this.urlPageBorder * 2;
+      const boxBase1 = (this.boxWidth + (this.boxMarginLR + this.boxBorder + this.boxPaddingLR)*2)
+      const boxBase2 = (this.boxWidth + (this.boxPaddingLR + this.boxBorder)*2 + this.UCBoxMarginR + this.boxMarginLR) 
+      const boxToUrlPage = this.urlPageBorder * 2
+      const width = ((this.unitnum-1)*this.colnum + 1)*boxBase1 + (this.colnum - 1)*boxBase2 + boxToUrlPage;
       return { width: width + 'px' }
     },
     boxStyle: function() {
@@ -115,6 +127,15 @@ export default {
         this.delayedDragging = false
       })
     }
+  },
+  created() {
+    this.getWindowWidth()
+    window.addEventListener('resize', () => {
+      this.windowWidth = document.body.clientWidth
+      console.log(document.body.clientWidth)
+    })
+  },
+  mounted() {
   },
   methods: {
     onMove({ relatedContext, draggedContext }) {
@@ -135,6 +156,9 @@ export default {
     },
     childEnd() {
       this.fatherEditable = !this.fatherEditable
+    },
+    getWindowWidth() {
+      this.windowWidth = document.body.clientWidth
     }
   }
 }
