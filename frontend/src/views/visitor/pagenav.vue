@@ -2,14 +2,27 @@
 <template>
   <div class="url-page-nav">
     <draggable v-model="urlList" v-bind="dragOptions" :move="onMove" element="div" @start="dragStart" @end="dragEnd">
-      <transition v-for="(page, index) in urlList" :key="index" name="fade" >
+      <transition v-for="(page, pageIndex) in urlList" :key="pageIndex" name="fade" >
         <div class="url-page-title">
-          <a>
-            <span>{{ page.title }}</span>
+          <a v-if="!edit">
+            <span v-on:click="handleScroll(pageIndex)">{{ page.title }}</span>
+          </a>
+          <a v-else>
+            <span v-on:dblclick="handleEdit(pageIndex)">{{ page.title }}</span>
           </a>
         </div>
       </transition>
     </draggable>
+    <el-dialog title="修改" :visible.sync="dialogVisible" width="30%" :before-close="handleClose" :append-to-body="true" style="z-index: 199!important">
+      <span>这是一段信息</span>
+      <el-input placeholder="请输入内容" v-model="item.title">
+        <template slot="prepend">Title</template>
+      </el-input>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="handleClose">取 消</el-button>
+        <el-button type="primary" @click="handleConfirm">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>>
 
@@ -27,10 +40,23 @@ export default {
     'drag' : {
       type: Object,
       default: {}
+    },
+    'edit': {
+      type: Boolean,
+      default: false
+    },
+    'position': {
+      type: Number,
+      default: 0
     }
   },
   data() {
     return {
+      item: {
+        pageIndex: -1,
+        title: ''
+      },
+      dialogVisible: false
     }
   },
   computed: {
@@ -40,6 +66,14 @@ export default {
       },
       set(val) {
         this.$emit('update:list', val)
+      }
+    },
+    pageIndex: {
+      get() {
+        return this.position
+      },
+      set(val) {
+        this.$emit('update:position', val)
       }
     },
     divDrag: {
@@ -87,6 +121,25 @@ export default {
       Object.keys(this.divDrag).forEach((key) => {
         this.divDrag[key] = true
       })
+    },
+    handleScroll(pageIndex) {
+      this.pageIndex = pageIndex
+    },
+    handleEdit(pageIndex) {
+      console.log(1)
+      this.item.pageIndex = pageIndex
+      this.dialogVisible = true
+    },
+    handleClose() {
+      this.dialogVisible = false
+    },
+    handleConfirm() {
+      const title = this.item.title
+      const pageIndex = this.item.pageIndex
+      let page = this.urlList[pageIndex]
+      page.title = title
+      this.urlList.splice(pageIndex, 1, page)
+      this.dialogVisible = false
     }
   }
 }

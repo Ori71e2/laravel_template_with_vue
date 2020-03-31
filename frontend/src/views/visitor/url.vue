@@ -1,25 +1,48 @@
 
 <template>
   <div :style="urlListStyle" class="url-list">
-    {{ windowWidth }}
-    <div v-for="(urlPage, index) in urlList" :key="index">
+    {{ distance }}
+    <div v-for="(urlPage, pageIndex) in urlList" :key="pageIndex" :ref="'anchor' + pageIndex">
+      <!-- <div :ref="'anchor' + pageIndex" style="display: none;"></div> -->
       <draggable v-model="urlPage.page" v-bind="groupDragOptions" :move="onMove" element="div" @start="groupStart" @end="groupEnd">
-        <div v-for="(urlGroup, index) in urlPage.page" :key="index"  :style="urlGroupStyle" class="url-group">
+        <div v-for="(urlGroup, groupIndex) in urlPage.page" :key="groupIndex"  :style="urlGroupStyle" class="url-group">
           <div :style="urlGroupTitleStyle" class="url-group-title">
-            <span>{{ urlGroup.title }}</span>
+            <span v-if="!edit">{{ urlGroup.title }}</span>
+            <span v-else v-on:click="handleEdit('group', pageIndex, groupIndex, urlIndex)">{{ urlGroup.title }}</span>
           </div>
           <draggable v-model="urlGroup.group" v-bind="boxDragOptions" :move="onMove" element="div" @start="boxStart" @end="boxEnd" :class="pageClass">
-            <transition v-for="(url, index) in urlGroup.group" :key="index" name="fade" >
+            <transition v-for="(url, urlIndex) in urlGroup.group" :key="urlIndex" name="fade" >
               <div :style="boxStyle" class="url-box">
-                <a href=url.url target="_blank">
-                  <span>{{ url.title }}{{ index }}</span>
+                <a v-if="!edit" href=url.url target="_blank">
+                  <span>{{ url.title }}{{ urlIndex }}</span>
                 </a>
-              </div>
+                <a v-else>
+                  <span v-on:click="handleEdit('url', pageIndex, groupIndex, urlIndex)">{{ url.title }}{{ urlIndex }}</span>
+                </a>
+              </div> 
             </transition>
+            <div :style="boxStyle" class="url-box url-box-add">
+              <a href='' target="_blank">
+                <span>Add</span>
+              </a>
+            </div>
           </draggable>
         </div>
       </draggable>
     </div>
+    <el-dialog title="修改" :visible.sync="dialogVisible" width="30%" :before-close="handleClose" :append-to-body="true" style="z-index: 199!important">
+      <span>这是一段信息</span>
+      <el-input placeholder="请输入内容" v-model="item.title">
+        <template slot="prepend">Title</template>
+      </el-input>
+      <el-input v-if="this.item.type === 'url'" placeholder="请输入内容" v-model="item.url">
+        <template slot="prepend">Http://</template>
+      </el-input>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="handleClose">取 消</el-button>
+        <el-button type="primary" @click="handleConfirm">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>>
 
@@ -37,6 +60,14 @@ export default {
     'drag' : {
       type: Object,
       default: {}
+    },
+    'edit': {
+      type: Boolean,
+      default: false
+    },
+    'position': {
+      type: Number,
+      default: 1
     }
   },
   data() {
@@ -50,7 +81,16 @@ export default {
       boxPaddingLR: 1,
       boxBorder: 1,
       boxMarginLR: 1,
-      UCBoxMarginR: 50
+      UCBoxMarginR: 50,
+      dialogVisible: false,
+      item: {
+        type: '',
+        pageIndex: -1,
+        groupIndex: -1,
+        urlIndex: -1,
+        title: '',
+        url: ''
+      }
     }
   },
   computed: {
@@ -61,6 +101,20 @@ export default {
       set(val) {
         this.$emit('update:list', val)
       }
+    },
+    distance: {
+      get() {
+        const index = 'anchor' + this.position
+        if (this.$refs[index]) {
+          console.log(this.$refs[index][0])
+          window.scrollTo(0, this.$refs[index][0].offsetTop - 80)
+        }
+        // window.scrollTo(this.$refs[index][0].offsetTop)
+        return this.index
+      },
+      // set(val) {
+      //   this.$emit('update:position', val)
+      // }
     },
     divDrag: {
       get() {
@@ -173,6 +227,35 @@ export default {
     },
     getWindowWidth() {
       this.windowWidth = document.body.clientWidth
+    },
+    handleEdit(type, pageIndex, groupIndex, urlIndex) {
+      this.item.type = type
+      this.item.urlIndex = urlIndex
+      this.item.pageIndex = pageIndex
+      this.item.groupIndex = groupIndex
+      this.dialogVisible = true
+    },
+    handleClose() {
+      this.dialogVisible = false
+    },
+    handleConfirm() {
+      const type = this.item.type
+      const url = this.item.url
+      const title = this.item.title
+      const pageIndex = this.item.pageIndex
+      const groupIndex = this.item.groupIndex
+      const urlIndex = this.item.urlIndex
+      let page = this.urlList[pageIndex]
+      if (type == 'url') {
+        page.page[groupIndex].group[urlIndex].url = url
+        page.page[groupIndex].group[urlIndex].title = title
+      } else if (type == 'group') {
+        page.page[groupIndex].title = title
+      } else if (type == 'page') {
+        page.title = title
+      }
+      this.urlList.splice(pageIndex, 1, page)
+      this.dialogVisible = false
     }
   }
 }
@@ -263,6 +346,9 @@ export default {
       color: #ffffff;
       background-color: #474a4d;
     }
+  }
+  .url-box-add {
+    border: dashed 1px red;
   }
   .fade-enter-active, .fade-leave-active {
     transition: opacity .5s;

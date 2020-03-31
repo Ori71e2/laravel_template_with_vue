@@ -18,10 +18,10 @@
     <el-container>
       <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
       </el-aside>
-      <pagenav v-bind:list.sync="urlPageList" v-bind:drag.sync="drag" class="pagenav" />
+      <pagenav v-bind:list.sync="urlPageList" v-bind:drag.sync="drag"  v-bind:position.sync="position" :edit="edit" class="pagenav" />
       <el-main>
-        {{ drag }}
-        <url v-bind:list.sync="urlPageList" v-bind:drag.sync="drag" />
+        {{ position }}
+        <url v-bind:list.sync="urlPageList" v-bind:drag.sync="drag" v-bind:position.sync="position" :edit="edit" />
       </el-main>
     </el-container>
   </el-container>
@@ -49,7 +49,9 @@ export default {
         page: true,
         group: true,
         box: true
-      }
+      },
+      edit: false,
+      position: 0
     }
   },
   created() {
