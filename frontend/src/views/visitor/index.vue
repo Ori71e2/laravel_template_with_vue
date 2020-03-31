@@ -18,10 +18,10 @@
     <el-container>
       <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
       </el-aside>
-      <pagenav v-bind:list.sync="urlPageList" class="pagenav" />
+      <pagenav v-bind:list.sync="urlPageList" v-bind:drag.sync="drag" class="pagenav" />
       <el-main>
-        <!-- {{ urlPageList }} -->
-        <url v-bind:list.sync="urlPageList" />
+        {{ drag }}
+        <url v-bind:list.sync="urlPageList" v-bind:drag.sync="drag" />
       </el-main>
     </el-container>
   </el-container>
@@ -45,10 +45,10 @@ export default {
     return {
       tableData: Array(20).fill(item),
       urlPageList: [],
-      draggable: {
-        page: false,
-        group: false,
-        box: false
+      drag: {
+        page: true,
+        group: true,
+        box: true
       }
     }
   },

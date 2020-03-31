@@ -3,12 +3,12 @@
   <div :style="urlListStyle" class="url-list">
     {{ windowWidth }}
     <div v-for="(urlPage, index) in urlList" :key="index">
-      <draggable v-model="urlPage.page" v-bind="fatherDragOptions" :move="onMove" element="div" @start="fatherStart" @end="fatherEnd">
+      <draggable v-model="urlPage.page" v-bind="groupDragOptions" :move="onMove" element="div" @start="groupStart" @end="groupEnd">
         <div v-for="(urlGroup, index) in urlPage.page" :key="index"  :style="urlGroupStyle" class="url-group">
           <div :style="urlGroupTitleStyle" class="url-group-title">
             <span>{{ urlGroup.title }}</span>
           </div>
-          <draggable v-model="urlGroup.group" v-bind="childDragOptions" :move="onMove" element="div" @start="childStart" @end="childEnd" :class="pageClass">
+          <draggable v-model="urlGroup.group" v-bind="boxDragOptions" :move="onMove" element="div" @start="boxStart" @end="boxEnd" :class="pageClass">
             <transition v-for="(url, index) in urlGroup.group" :key="index" name="fade" >
               <div :style="boxStyle" class="url-box">
                 <a href=url.url target="_blank">
@@ -33,17 +33,14 @@ export default {
     'list': {
       type: Array,
       default: []
+    },
+    'drag' : {
+      type: Object,
+      default: {}
     }
   },
   data() {
     return {
-      groupList1: [],
-      groupList2: [],
-      editable: true,
-      childEditable: true,
-      fatherEditable: true,
-      isDragging: false,
-      delayedDragging: false,
       windowWidth: 1000,
       urlPageOffsetLeft: 0,
       unitnum: 3,
@@ -65,20 +62,28 @@ export default {
         this.$emit('update:list', val)
       }
     },
-    childDragOptions() {
+    divDrag: {
+      get() {
+        return this.drag
+      },
+      set(val) {
+        this.$emit('update:drag', val)
+      }
+    },
+    boxDragOptions() {
       return {
         animation: 0,
         group: 'description',
         // disabled: true,
-        disabled: !this.childEditable,
+        disabled: !this.divDrag.box,
         ghostClass: 'ghost'
       }
     },
-    fatherDragOptions() {
+    groupDragOptions() {
       return {
         animation: 0,
         group: 'description',
-        disabled: !this.fatherEditable,
+        disabled: !this.divDrag.group,
         ghostClass: 'ghost'
       }
     },
@@ -120,15 +125,6 @@ export default {
     }
   },
   watch: {
-    isDragging(newValue) {
-      if (newValue) {
-        this.delayedDragging = true
-        return
-      }
-      this.$nextTick(() => {
-        this.delayedDragging = false
-      })
-    }
   },
   created() {
     this.getWindowWidth()
@@ -151,17 +147,29 @@ export default {
         (!relatedElement || !relatedElement.fixed) && !draggedElement.fixed
       )
     },
-    fatherStart() {
-      this.childEditable = !this.childEditable
+    groupStart() {
+      Object.keys(this.divDrag).forEach((key) => {
+        if (key !== 'group') {
+          this.divDrag[key] = false
+        }
+      })
     },
-    fatherEnd() {
-      this.childEditable = !this.childEditable
+    groupEnd() {
+      Object.keys(this.divDrag).forEach((key) => {
+        this.divDrag[key] = true
+      })
     },
-    childStart() {
-      this.fatherEditable = !this.fatherEditable
+    boxStart() {
+      Object.keys(this.divDrag).forEach((key) => {
+        if (key !== 'box') {
+          this.divDrag[key] = false
+        }
+      })
     },
-    childEnd() {
-      this.fatherEditable = !this.fatherEditable
+    boxEnd() {
+      Object.keys(this.divDrag).forEach((key) => {
+        this.divDrag[key] = true
+      })
     },
     getWindowWidth() {
       this.windowWidth = document.body.clientWidth

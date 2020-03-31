@@ -1,7 +1,7 @@
 
 <template>
   <div class="url-page-nav">
-    <draggable v-model="urlList" v-bind="dragOptions" :move="onMove" element="div">
+    <draggable v-model="urlList" v-bind="dragOptions" :move="onMove" element="div" @start="dragStart" @end="dragEnd">
       <transition v-for="(page, index) in urlList" :key="index" name="fade" >
         <div class="url-page-title">
           <a>
@@ -23,6 +23,10 @@ export default {
     'list': {
       type: Array,
       default: []
+    },
+    'drag' : {
+      type: Object,
+      default: {}
     }
   },
   data() {
@@ -38,15 +42,23 @@ export default {
         this.$emit('update:list', val)
       }
     },
+    divDrag: {
+      get() {
+        return this.drag
+      },
+      set(val) {
+        this.$emit('update:drag', val)
+      }
+    },
     dragOptions() {
       return {
         animation: 0,
         group: 'description',
         // disabled: true,
-        // disabled: !this.childEditable,
+        disabled: !this.divDrag.page,
         ghostClass: 'ghost'
       }
-    },
+    }
   },
   watch: {
   },
@@ -63,6 +75,18 @@ export default {
       return (
         (!relatedElement || !relatedElement.fixed) && !draggedElement.fixed
       )
+    },
+    dragStart() {
+      Object.keys(this.divDrag).forEach((key) => {
+        if (key !== 'page') {
+          this.divDrag[key] = false
+        }
+      })
+    },
+    dragEnd() {
+      Object.keys(this.divDrag).forEach((key) => {
+        this.divDrag[key] = true
+      })
     }
   }
 }
