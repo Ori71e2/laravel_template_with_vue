@@ -23,6 +23,7 @@
         {{ position }}
         <url :list.sync="urlPageList" :drag.sync="drag" :position.sync="position" :edit="edit" />
       </el-main>
+      <operate :list.sync="urlPageList" :drag.sync="drag" :edit="edit" class="operate" />
     </el-container>
   </el-container>
 </template>>
@@ -32,9 +33,10 @@ import { getUrlPageList } from '@/api/url'
 import axios from 'axios'
 import url from './url'
 import pagenav from './pagenav'
+import operate from './operate'
 export default {
   components: {
-    url, pagenav
+    url, pagenav, operate
   },
   data() {
     const item = {
@@ -112,6 +114,16 @@ $headerHeight: 80px;
     width: 200px;
     height: calc(100vh - #{$headerHeight} - 20px);
     border: solid 1px red;
+    z-index: 100;
+  }
+  .operate {
+    position: fixed;
+    // top: calc((100vh - #{$headerHeight})/2);
+    bottom: 400px;
+    right: 25px;
+    margin-right: 10px;
+    width: 20px;
+    height: 20px;
     z-index: 100;
   }
 </style>

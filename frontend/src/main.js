@@ -8,6 +8,8 @@ import locale from 'element-ui/lib/locale/lang/zh-CN'
 
 import '@/styles/index.scss' // global css
 
+import animated from 'animate.css' 
+
 import App from './App'
 import store from './store'
 import router from './router'
@@ -29,7 +31,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // set ElementUI lang to EN
-Vue.use(ElementUI, { locale })
+Vue.use(ElementUI, animated, { locale })
 import contentmenu from 'v-contextmenu'
 import 'v-contextmenu/dist/index.css'
 Vue.use(contentmenu)
