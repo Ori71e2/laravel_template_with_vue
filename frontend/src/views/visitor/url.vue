@@ -8,7 +8,7 @@
         <div v-for="(urlGroup, groupIndex) in urlPage.page" :key="groupIndex"  :style="urlGroupStyle" class="url-group">
           <div :style="urlGroupTitleStyle" class="url-group-title">
             <span v-if="!edit">{{ urlGroup.title }}</span>
-            <span v-else v-on:click="handleEdit('group', pageIndex, groupIndex, urlIndex)">{{ urlGroup.title }}</span>
+            <span v-else @click="handleEdit('group', pageIndex, groupIndex, urlIndex)">{{ urlGroup.title }}</span>
           </div>
           <draggable v-model="urlGroup.group" v-bind="boxDragOptions" :move="onMove" element="div" @start="boxStart" @end="boxEnd" :class="pageClass">
             <transition v-for="(url, urlIndex) in urlGroup.group" :key="urlIndex" name="fade" >
@@ -17,7 +17,7 @@
                   <span>{{ url.title }}{{ urlIndex }}</span>
                 </a>
                 <a v-else>
-                  <span v-on:click="handleEdit('url', pageIndex, groupIndex, urlIndex)">{{ url.title }}{{ urlIndex }}</span>
+                  <span @click="handleEdit('url', pageIndex, groupIndex, urlIndex)">{{ url.title }}{{ urlIndex }}</span>
                 </a>
               </div> 
             </transition>
@@ -33,10 +33,10 @@
     <el-dialog title="修改" :visible.sync="dialogVisible" width="30%" :before-close="handleClose" :append-to-body="true" style="z-index: 199!important">
       <span>这是一段信息</span>
       <el-input placeholder="请输入内容" v-model="item.title">
-        <template slot="prepend">Title</template>
+        <template slot="prepend">名称</template>
       </el-input>
       <el-input v-if="this.item.type === 'url'" placeholder="请输入内容" v-model="item.url">
-        <template slot="prepend">Http://</template>
+        <template slot="prepend">网址</template>
       </el-input>
       <span slot="footer" class="dialog-footer">
         <el-button @click="handleClose">取 消</el-button>
@@ -106,10 +106,9 @@ export default {
       get() {
         const index = 'anchor' + this.position
         if (this.$refs[index]) {
-          console.log(this.$refs[index][0])
+          // console.log(this.$refs[index][0])
           window.scrollTo(0, this.$refs[index][0].offsetTop - 80)
         }
-        // window.scrollTo(this.$refs[index][0].offsetTop)
         return this.index
       },
       // set(val) {

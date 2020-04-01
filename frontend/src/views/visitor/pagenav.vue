@@ -5,10 +5,10 @@
       <transition v-for="(page, pageIndex) in urlList" :key="pageIndex" name="fade" >
         <div class="url-page-title">
           <a v-if="!edit">
-            <span v-on:click="handleScroll(pageIndex)">{{ page.title }}</span>
+            <span @click="handleScroll(pageIndex)">{{ page.title }}</span>
           </a>
           <a v-else>
-            <span v-on:dblclick="handleEdit(pageIndex)">{{ page.title }}</span>
+            <span @click="handleScroll(pageIndex)" @dblclick="handleEdit(pageIndex)">{{ page.title }}</span>
           </a>
         </div>
       </transition>
