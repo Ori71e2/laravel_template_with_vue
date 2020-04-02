@@ -62,7 +62,7 @@ export default {
   computed: {
     urlList: {
       get() {
-        return this.list
+        return this.list.slice()
       },
       set(val) {
         this.$emit('update:list', val)
@@ -136,10 +136,11 @@ export default {
     handleConfirm() {
       const title = this.item.title
       const pageIndex = this.item.pageIndex
-      let page = this.urlList[pageIndex]
+      let page = this.urlList[pageIndex].slice()
       page.title = title
       this.urlList.splice(pageIndex, 1, page)
       this.dialogVisible = false
+      this.setUpdate()
     }
   }
 }

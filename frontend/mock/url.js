@@ -18,17 +18,17 @@ export default [
 
       var urlList = []
       var images = [1,2,3].map(x=>Random.image('200x100', Random.color(), Random.word(2,6)));
-      for (var k = 0; k<8; k++) {
+      for (var k = 0; k<3; k++) {
         var page = []
-        for(var m = 0; m < 5; m++) {
+        for(var m = 0; m < 2; m++) {
           var group = []
-          for (var i = 0; i < 20; i++) {
+          for (var i = 0; i < 8; i++) {
             var content = Random.cparagraph(0,10);
             group.push({
                 id: i, 
                 title: Random.cword(2,5),
                 url: Random.domain(),
-                tag: Random.cword(2,6),
+                // tag: Random.cword(2,6),
                 // images: images.slice(0,Random.integer(1,3))
             })
           }

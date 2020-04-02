@@ -23,7 +23,7 @@
         {{ position }}
         <url :list.sync="urlPageList" :drag.sync="drag" :position.sync="position" :edit="edit" />
       </el-main>
-      <operate :list.sync="urlPageList" :drag.sync="drag" :edit="edit" class="operate" />
+      <operate :list.sync="urlPageList" :drag.sync="drag" :edit.sync="edit" class="operate" />
     </el-container>
   </el-container>
 </template>>
@@ -48,11 +48,11 @@ export default {
       tableData: Array(20).fill(item),
       urlPageList: [],
       drag: {
-        page: true,
-        group: true,
-        box: true
+        page: false,
+        group: false,
+        box: false
       },
-      edit: true,
+      edit: false,
       position: 0
     }
   },
@@ -123,7 +123,7 @@ $headerHeight: 80px;
     right: 25px;
     margin-right: 10px;
     width: 20px;
-    height: 20px;
+    height: 100px;
     z-index: 100;
   }
 </style>

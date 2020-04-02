@@ -96,7 +96,7 @@ export default {
   computed: {
     urlList: {
       get() {
-        return this.list
+        return this.list.slice()
       },
       set(val) {
         this.$emit('update:list', val)
@@ -244,7 +244,7 @@ export default {
       const pageIndex = this.item.pageIndex
       const groupIndex = this.item.groupIndex
       const urlIndex = this.item.urlIndex
-      let page = this.urlList[pageIndex]
+      let page = this.urlList[pageIndex].slice()
       if (type == 'url') {
         page.page[groupIndex].group[urlIndex].url = url
         page.page[groupIndex].group[urlIndex].title = title

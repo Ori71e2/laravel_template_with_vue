@@ -2,9 +2,12 @@
 <template>
   <div class="operate">
     <div v-if="visible" class="content box animated fadeInUp">
-      <i class="el-icon-edit"></i>
-      <i class="el-icon-share"></i>
-      <i class="el-icon-delete"></i>
+      <i @click="isEdit = !isEdit" :class="[isEdit ? activeClass : inactiveClass]" class="el-icon-edit"></i>
+      <i @click="setDrag" :class="[isDrag ? activeClass : inactiveClass]" class="el-icon-rank"></i>
+      <i :class="[isRecycleBinEmpty ? inactiveClass : activeClass]" class="el-icon-delete"></i>
+      <!-- <i class="el-icon-back"></i>
+      <i class="el-icon-right"></i> -->
+      <i @click="save()" :class="[isUpdate ? activeClass : inactiveClass]" class="el-icon-circle-check"></i>
     </div>
     <div v-else class="content"></div>
     <div @click="popOver" class="button" slot="reference"><i class="el-icon-caret-top caret"/></div>
@@ -33,7 +36,13 @@ export default {
   },
   data() {
     return {
-      visible: false
+      visible: false,
+      recycleBin: [],
+      history: [],
+      activeClass: 'active',
+      inactiveClass: 'inactive',
+      isDrag: false,
+      oldUrlList: []
     }
   },
   computed: {
@@ -53,18 +62,48 @@ export default {
         this.$emit('update:position', val)
       }
     },
-    divDrag: {
+    isEdit: {
       get() {
-        return this.drag
+        return this.edit
       },
       set(val) {
-        this.$emit('update:drag', val)
+        this.$emit('update:edit', val)
+        console.log(val)
       }
+    },
+    // isSave: {
+    //   get() {
+    //     return this.isDrag || this.isEdit || this.update
+    //   }
+    // },
+    isUpdate() {
+      if (this.oldUrlList.length != 0) {
+        let oldString = JSON.stringify(this.oldUrlList)
+        let newString = JSON.stringify(this.urlList)
+        let oldLen = oldString.length
+        let newLen = newString.length
+        if (oldLen != newLen) {
+          return true
+        } else {
+          for(let i = 0; i < oldLen; i++) {
+            if(oldString[i] != newString[i]) {
+              return true
+            }
+          }
+          return false
+        }
+      } else {
+        return false
+      }
+    },
+    isRecycleBinEmpty(){
+      return this.recycleBin.length == 0 ? true : false
     }
   },
   watch: {
   },
   created() {
+    this.oldUrlList = this.urlList.slice()
   },
   mounted() {
   },
@@ -73,6 +112,17 @@ export default {
   methods: {
     popOver() {
       this.visible = !this.visible
+    },
+    setDrag() {
+      let flag = this.drag
+      this.isDrag = !this.isDrag
+      Object.keys(this.drag).forEach((key) => {
+        flag[key] = this.isDrag
+      })
+      this.$emit('update:drag', flag)
+    },
+    save() {
+      this.oldUrlList = this.urlList.slice()
     }
   }
 }
@@ -88,10 +138,23 @@ export default {
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
-  margin: 0px auto;
+  justify-content: space-between;
+  margin: 20px auto;
   width: 30px;
-  height: 200px;
+  height: 210px;
   overflow: auto;
+  i {
+    width: 100%;
+    height: 30px;
+    font-weight: 400;
+    font-size: 30px;
+  }
+}
+.active {
+  color: #409EFF
+}
+.inactive {
+  color: #909399;
 }
 .hidden {
   visibility: hidden;
