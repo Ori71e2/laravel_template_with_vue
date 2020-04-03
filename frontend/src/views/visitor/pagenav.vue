@@ -48,6 +48,9 @@ export default {
     'position': {
       type: Number,
       default: 0
+    },
+    'trigger': {
+      type: false
     }
   },
   data() {
@@ -127,7 +130,6 @@ export default {
       this.pageIndex = pageIndex
     },
     handleEdit(pageIndex) {
-      console.log(1)
       this.item.pageIndex = pageIndex
       this.dialogVisible = true
     },

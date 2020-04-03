@@ -20,7 +20,7 @@
       </el-aside>
       <pagenav :list.sync="urlPageList" :drag.sync="drag" :position.sync="position" :edit="edit" class="pagenav" />
       <el-main>
-        {{ position }}
+        {{ urlPageList }}
         <url :list.sync="urlPageList" :drag.sync="drag" :position.sync="position" :edit="edit" />
       </el-main>
       <operate :list.sync="urlPageList" :drag.sync="drag" :edit.sync="edit" class="operate" />

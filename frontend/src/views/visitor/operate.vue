@@ -2,7 +2,7 @@
 <template>
   <div class="operate">
     <div v-if="visible" class="content box animated fadeInUp">
-      <i @click="isEdit = !isEdit" :class="[isEdit ? activeClass : inactiveClass]" class="el-icon-edit"></i>
+      <i @click="setEdit" :class="[isEdit ? activeClass : inactiveClass]" class="el-icon-edit"></i>
       <i @click="setDrag" :class="[isDrag ? activeClass : inactiveClass]" class="el-icon-rank"></i>
       <i :class="[isRecycleBinEmpty ? inactiveClass : activeClass]" class="el-icon-delete"></i>
       <!-- <i class="el-icon-back"></i>
@@ -71,26 +71,17 @@ export default {
         console.log(val)
       }
     },
-    // isSave: {
-    //   get() {
-    //     return this.isDrag || this.isEdit || this.update
-    //   }
-    // },
     isUpdate() {
+      let oldString = JSON.stringify(this.oldUrlList)
+      let newString = JSON.stringify(this.urlList)
+      let oldLen = oldString.length
+      let newLen = newString.length
       if (this.oldUrlList.length != 0) {
-        let oldString = JSON.stringify(this.oldUrlList)
-        let newString = JSON.stringify(this.urlList)
-        let oldLen = oldString.length
-        let newLen = newString.length
+        console.log('update')
         if (oldLen != newLen) {
           return true
         } else {
-          for(let i = 0; i < oldLen; i++) {
-            if(oldString[i] != newString[i]) {
-              return true
-            }
-          }
-          return false
+          return oldString == newString ? false : true
         }
       } else {
         return false
@@ -103,7 +94,6 @@ export default {
   watch: {
   },
   created() {
-    this.oldUrlList = this.urlList.slice()
   },
   mounted() {
   },
@@ -120,9 +110,14 @@ export default {
         flag[key] = this.isDrag
       })
       this.$emit('update:drag', flag)
+      this.save()
+    },
+    setEdit() {
+      this.$emit('update:edit', !this.isEdit)
+      this.save()
     },
     save() {
-      this.oldUrlList = this.urlList.slice()
+      this.oldUrlList = JSON.parse(JSON.stringify(this.urlList))
     }
   }
 }

@@ -8,16 +8,16 @@
         <div v-for="(urlGroup, groupIndex) in urlPage.page" :key="groupIndex"  :style="urlGroupStyle" class="url-group">
           <div :style="urlGroupTitleStyle" class="url-group-title">
             <span v-if="!edit">{{ urlGroup.title }}</span>
-            <span v-else @click="handleEdit('group', pageIndex, groupIndex, urlIndex)">{{ urlGroup.title }}</span>
+            <a v-else @click="handleEdit('group', pageIndex, groupIndex, -1)">{{ urlGroup.title }}</a>
           </div>
           <draggable v-model="urlGroup.group" v-bind="boxDragOptions" :move="onMove" element="div" @start="boxStart" @end="boxEnd" :class="pageClass">
             <transition v-for="(url, urlIndex) in urlGroup.group" :key="urlIndex" name="fade" >
               <div :style="boxStyle" class="url-box">
                 <a v-if="!edit" href=url.url target="_blank">
-                  <span>{{ url.title }}{{ urlIndex }}</span>
+                  <span>{{ url.title }}</span>
                 </a>
                 <a v-else>
-                  <span @click="handleEdit('url', pageIndex, groupIndex, urlIndex)">{{ url.title }}{{ urlIndex }}</span>
+                  <span @click="handleEdit('url', pageIndex, groupIndex, urlIndex)">{{ url.title }}</span>
                 </a>
               </div> 
             </transition>
@@ -211,7 +211,7 @@ export default {
       Object.keys(this.divDrag).forEach((key) => {
         this.divDrag[key] = true
       })
-      this.updateList()
+      this.setUrlList()
     },
     boxStart() {
       Object.keys(this.divDrag).forEach((key) => {
@@ -224,7 +224,7 @@ export default {
       Object.keys(this.divDrag).forEach((key) => {
         this.divDrag[key] = true
       })
-      this.updateList()
+      this.setUrlList()
     },
     getWindowWidth() {
       this.windowWidth = document.body.clientWidth
@@ -246,7 +246,7 @@ export default {
       const pageIndex = this.item.pageIndex
       const groupIndex = this.item.groupIndex
       const urlIndex = this.item.urlIndex
-      let page = this.urlList[pageIndex].slice()
+      let page = JSON.parse(JSON.stringify(this.urlList[pageIndex]))
       if (type == 'url') {
         page.page[groupIndex].group[urlIndex].url = url
         page.page[groupIndex].group[urlIndex].title = title
@@ -255,11 +255,13 @@ export default {
       } else if (type == 'page') {
         page.title = title
       }
-      this.urlList.splice(pageIndex, 1, page)
+      this.urlList[pageIndex] = page
+      this.setUrlList()
       this.dialogVisible = false
     },
-    updateList() {
-      this.urlList = JSON.parse(JSON.stringify(this.list))
+    setUrlList() {
+      // this.$emit('update:trigger', !this.trigger)
+      this.urlList = JSON.parse(JSON.stringify(this.urlList))
     }
   }
 
@@ -282,10 +284,12 @@ export default {
     border-style: solid;
     border-color: red;
     .url-group-title {
+      box-sizing: content-box;
       border: solid $boxBorder red;
       border-radius: 2px;
       margin-left: $boxMarginLR;
       margin-right: $boxMarginLR;
+      padding: 0px $boxPaddingLR;
       margin-bottom: 2px;
       background-color: #ffffff;
       height: 30px;
