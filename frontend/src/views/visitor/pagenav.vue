@@ -62,10 +62,10 @@ export default {
   computed: {
     urlList: {
       get() {
-        return this.list.slice()
+        return JSON.parse(JSON.stringify(this.list))
       },
       set(val) {
-        this.$emit('update:list', val)
+        this.$emit('update:list', JSON.parse(JSON.stringify(val)))
       }
     },
     pageIndex: {
@@ -121,6 +121,7 @@ export default {
       Object.keys(this.divDrag).forEach((key) => {
         this.divDrag[key] = true
       })
+      this.updateList()
     },
     handleScroll(pageIndex) {
       this.pageIndex = pageIndex
@@ -140,7 +141,9 @@ export default {
       page.title = title
       this.urlList.splice(pageIndex, 1, page)
       this.dialogVisible = false
-      this.setUpdate()
+    },
+    updateList() {
+      this.urlList = JSON.parse(JSON.stringify(this.list))
     }
   }
 }

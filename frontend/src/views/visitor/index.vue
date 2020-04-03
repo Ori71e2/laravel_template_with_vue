@@ -58,7 +58,7 @@ export default {
   },
   created() {
     getUrlPageList().then(response => {
-      this.urlPageList = response.data
+      this.urlPageList = JSON.parse(response.data)
     })
   }
 }

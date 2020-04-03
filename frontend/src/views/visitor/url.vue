@@ -96,10 +96,10 @@ export default {
   computed: {
     urlList: {
       get() {
-        return this.list.slice()
+        return JSON.parse(JSON.stringify(this.list))
       },
       set(val) {
-        this.$emit('update:list', val)
+        this.$emit('update:list', JSON.parse(JSON.stringify(val)))
       }
     },
     distance: {
@@ -211,6 +211,7 @@ export default {
       Object.keys(this.divDrag).forEach((key) => {
         this.divDrag[key] = true
       })
+      this.updateList()
     },
     boxStart() {
       Object.keys(this.divDrag).forEach((key) => {
@@ -223,6 +224,7 @@ export default {
       Object.keys(this.divDrag).forEach((key) => {
         this.divDrag[key] = true
       })
+      this.updateList()
     },
     getWindowWidth() {
       this.windowWidth = document.body.clientWidth
@@ -255,8 +257,12 @@ export default {
       }
       this.urlList.splice(pageIndex, 1, page)
       this.dialogVisible = false
+    },
+    updateList() {
+      this.urlList = JSON.parse(JSON.stringify(this.list))
     }
   }
+
 }
 </script>
 

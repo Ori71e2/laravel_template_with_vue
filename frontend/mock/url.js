@@ -46,7 +46,7 @@ export default [
       }
       return {
         code: 20000,
-        data: urlList
+        data: JSON.stringify(urlList)
       }
     }
   },

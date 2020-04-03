@@ -48,10 +48,10 @@ export default {
   computed: {
     urlList: {
       get() {
-        return this.list
+        return JSON.parse(JSON.stringify(this.list))
       },
       set(val) {
-        this.$emit('update:list', val)
+        this.$emit('update:list', JSON.parse(JSON.stringify(val)))
       }
     },
     pageIndex: {
