@@ -8,7 +8,7 @@
 import Tinymce from 'tinymce'
 
 export default {
-  name: 'editor_index',
+  name: 'EditorIndex',
   mounted() {
     Tinymce.init({
       selector: '.editor',
@@ -17,21 +17,21 @@ export default {
       // skin: 'oxide',
       // 编辑器宽高
       height: 600,
-      // plugins: ['link'],  
-    //会自动引入silver主题
+      // plugins: ['link'],
+    // 会自动引入silver主题
     // https://fe.120yibao.com/common/tinymce/5.0.13/themes/silver/theme.min.js
       theme: 'silver',
-    //会自动引入oxide皮肤
+    // 会自动引入oxide皮肤
     // https://fe.120yibao.com/common/tinymce/5.0.13/skins/ui/oxide/skin.min.css
       skin: 'oxide',
       menubar: true,
       statusbar: false,
       // 用到的插件
       plugins: 'image',
-      async images_upload_handler (blobInfo, success, fail) {
+      async images_upload_handler(blobInfo, success, fail) {
           const file = blobInfo.blob()
           console.log(file)
-          
+
           // try {
           //   const url = self.YB.businessURL(await self.upload.post(file))
           //   success(url)
@@ -45,7 +45,7 @@ export default {
     //   // 编辑区域内容样式
     //   content_css: 'css/content.css',
       // 工具栏的配置项
-      toolbar: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent  | link image | print preview media fullpage | forecolor backcolor emoticons',
+      toolbar: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent  | link image | print preview media fullpage | forecolor backcolor emoticons'
      // toolbar: 'code',
       // plugins: 'numlist bullist',
       // toolbar: 'lists',

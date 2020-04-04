@@ -3,18 +3,18 @@
     <el-row>
       <el-col :span="12">
         <div class="grid-content bg-purple">
-          <el-form :model="editForm" :rules="editFormRules" ref="editForm" label-width="100px" class="demo-ruleForm">
+          <el-form ref="editForm" :model="editForm" :rules="editFormRules" label-width="100px" class="demo-ruleForm">
             <el-form-item label="昵称" prop="name">
-              <el-input type="text" v-model="editForm.name" disabled></el-input>
+              <el-input v-model="editForm.name" type="text" disabled />
             </el-form-item>
             <el-form-item label="原密码" prop="oldPassword">
-              <el-input type="password" v-model="editForm.oldPassword" auto-complete="off"></el-input>
+              <el-input v-model="editForm.oldPassword" type="password" auto-complete="off" />
             </el-form-item>
             <el-form-item label="密码" prop="password">
-              <el-input type="password" v-model="editForm.password" auto-complete="off"></el-input>
+              <el-input v-model="editForm.password" type="password" auto-complete="off" />
             </el-form-item>
             <el-form-item label="确认密码" prop="password_confirmation">
-              <el-input type="password" v-model="editForm.password_confirmation" auto-complete="off"></el-input>
+              <el-input v-model="editForm.password_confirmation" type="password" auto-complete="off" />
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="formSubmit('editForm')">提交</el-button>
@@ -87,12 +87,12 @@
                 confirmButtonText: '确定',
                 callback: action => {
                   this.$store.dispatch('user/resetToken').then(() => {
-                    this.$router.push({ path: '/login'})
+                    this.$router.push({ path: '/login' })
                   })
                 }
-              });
-          }).catch(err=>{
-            let result = err.response.data
+              })
+          }).catch(err => {
+            const result = err.response.data
             this.$message.error(result.info)
             this.editForm['password'] = '',
             this.editForm['oldPassword'] = ''

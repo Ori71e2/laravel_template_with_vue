@@ -2,15 +2,15 @@
 <template>
   <div class="operate">
     <div v-if="visible" class="content box animated fadeInUp">
-      <i @click="setEdit" :class="[isEdit ? activeClass : inactiveClass]" class="el-icon-edit"></i>
-      <i @click="setDrag" :class="[isDrag ? activeClass : inactiveClass]" class="el-icon-rank"></i>
-      <i :class="[isRecycleBinEmpty ? inactiveClass : activeClass]" class="el-icon-delete"></i>
+      <i :class="[isEdit ? activeClass : inactiveClass]" class="el-icon-edit" @click="setEdit" />
+      <i :class="[isDrag ? activeClass : inactiveClass]" class="el-icon-rank" @click="setDrag" />
+      <i :class="[isRecycleBinEmpty ? inactiveClass : activeClass]" class="el-icon-delete" />
       <!-- <i class="el-icon-back"></i>
       <i class="el-icon-right"></i> -->
-      <i @click="save()" :class="[isUpdate ? activeClass : inactiveClass]" class="el-icon-circle-check"></i>
+      <i :class="[isUpdate ? activeClass : inactiveClass]" class="el-icon-circle-check" @click="save()" />
     </div>
-    <div v-else class="content"></div>
-    <div @click="popOver" class="button" slot="reference"><i class="el-icon-caret-top caret"/></div>
+    <div v-else class="content" />
+    <div slot="reference" class="button" @click="popOver"><i class="el-icon-caret-top caret" /></div>
   </div>
 </template>>
 
@@ -25,7 +25,7 @@ export default {
       type: Array,
       default: []
     },
-    'drag' : {
+    'drag': {
       type: Object,
       default: {}
     },
@@ -42,7 +42,8 @@ export default {
       activeClass: 'active',
       inactiveClass: 'inactive',
       isDrag: false,
-      oldUrlList: []
+      oldUrlList: [],
+      historyUrlListQueue: []
     }
   },
   computed: {
@@ -68,27 +69,26 @@ export default {
       },
       set(val) {
         this.$emit('update:edit', val)
-        console.log(val)
       }
     },
     isUpdate() {
-      let oldString = JSON.stringify(this.oldUrlList)
-      let newString = JSON.stringify(this.urlList)
-      let oldLen = oldString.length
-      let newLen = newString.length
+      const oldString = JSON.stringify(this.oldUrlList)
+      const newString = JSON.stringify(this.urlList)
+      const oldLen = oldString.length
+      const newLen = newString.length
       if (this.oldUrlList.length != 0) {
         console.log('update')
         if (oldLen != newLen) {
           return true
         } else {
-          return oldString == newString ? false : true
+          return oldString != newString
         }
       } else {
         return false
       }
     },
-    isRecycleBinEmpty(){
-      return this.recycleBin.length == 0 ? true : false
+    isRecycleBinEmpty() {
+      return this.recycleBin.length == 0
     }
   },
   watch: {
@@ -104,7 +104,7 @@ export default {
       this.visible = !this.visible
     },
     setDrag() {
-      let flag = this.drag
+      const flag = this.drag
       this.isDrag = !this.isDrag
       Object.keys(this.drag).forEach((key) => {
         flag[key] = this.isDrag

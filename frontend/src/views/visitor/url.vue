@@ -5,24 +5,24 @@
     <div v-for="(urlPage, pageIndex) in urlList" :key="pageIndex" :ref="'anchor' + pageIndex">
       <!-- <div :ref="'anchor' + pageIndex" style="display: none;"></div> -->
       <draggable v-model="urlPage.page" v-bind="groupDragOptions" :move="onMove" element="div" @start="groupStart" @end="groupEnd">
-        <div v-for="(urlGroup, groupIndex) in urlPage.page" :key="groupIndex"  :style="urlGroupStyle" class="url-group">
+        <div v-for="(urlGroup, groupIndex) in urlPage.page" :key="groupIndex" :style="urlGroupStyle" class="url-group">
           <div :style="urlGroupTitleStyle" class="url-group-title">
             <span v-if="!edit">{{ urlGroup.title }}</span>
             <a v-else @click="handleEdit('group', pageIndex, groupIndex, -1)">{{ urlGroup.title }}</a>
           </div>
-          <draggable v-model="urlGroup.group" v-bind="boxDragOptions" :move="onMove" element="div" @start="boxStart" @end="boxEnd" :class="pageClass">
-            <transition v-for="(url, urlIndex) in urlGroup.group" :key="urlIndex" name="fade" >
+          <draggable v-model="urlGroup.group" v-bind="boxDragOptions" :move="onMove" element="div" :class="pageClass" @start="boxStart" @end="boxEnd">
+            <transition v-for="(url, urlIndex) in urlGroup.group" :key="urlIndex" name="fade">
               <div :style="boxStyle" class="url-box">
-                <a v-if="!edit" href=url.url target="_blank">
+                <a v-if="!edit" href="url.url" target="_blank">
                   <span>{{ url.title }}</span>
                 </a>
                 <a v-else>
                   <span @click="handleEdit('url', pageIndex, groupIndex, urlIndex)">{{ url.title }}</span>
                 </a>
-              </div> 
+              </div>
             </transition>
             <div :style="boxStyle" class="url-box url-box-add">
-              <a href='' target="_blank">
+              <a href="" target="_blank">
                 <span>Add</span>
               </a>
             </div>
@@ -32,10 +32,10 @@
     </div>
     <el-dialog title="修改" :visible.sync="dialogVisible" width="30%" :before-close="handleClose" :append-to-body="true" style="z-index: 199!important">
       <span>这是一段信息</span>
-      <el-input placeholder="请输入内容" v-model="item.title">
+      <el-input v-model="item.title" placeholder="请输入内容">
         <template slot="prepend">名称</template>
       </el-input>
-      <el-input v-if="this.item.type === 'url'" placeholder="请输入内容" v-model="item.url">
+      <el-input v-if="itemType === 'url'" v-model="item.url" placeholder="请输入内容">
         <template slot="prepend">网址</template>
       </el-input>
       <span slot="footer" class="dialog-footer">
@@ -55,11 +55,11 @@ export default {
   props: {
     'list': {
       type: Array,
-      default: []
+      default: function() { return [] }
     },
-    'drag' : {
+    'drag': {
       type: Object,
-      default: {}
+      default: function() { return {} }
     },
     'edit': {
       type: Boolean,
@@ -110,7 +110,7 @@ export default {
           window.scrollTo(0, this.$refs[index][0].offsetTop - 80)
         }
         return this.index
-      },
+      }
       // set(val) {
       //   this.$emit('update:position', val)
       // }
@@ -122,6 +122,9 @@ export default {
       set(val) {
         this.$emit('update:drag', val)
       }
+    },
+    itemType() {
+      return this.item.type
     },
     boxDragOptions() {
       return {
@@ -141,12 +144,12 @@ export default {
       }
     },
     pageClass: function() {
-      let pageItem = []
-      for(let i=1; i<11; i++) {
-        let item = []
-        for (let j=1; j<11; j++) {
-          let string = ['page', 'item', i, j].join('-')
-          item.push(string) 
+      const pageItem = []
+      for (let i = 1; i < 11; i++) {
+        const item = []
+        for (let j = 1; j < 11; j++) {
+          const string = ['page', 'item', i, j].join('-')
+          item.push(string)
         }
         pageItem.push(item)
       }
@@ -156,21 +159,21 @@ export default {
       return { width: this.boxWidth + 'px' }
     },
     urlGroupStyle: function() {
-      return { borderWidth: this.urlPageBorder + 'px'}
+      return { borderWidth: this.urlPageBorder + 'px' }
     },
     colnum() {
-      const boxBase1 = (this.boxWidth + (this.boxMarginLR + this.boxBorder + this.boxPaddingLR)*2)
-      const boxBase2 = (this.boxWidth + (this.boxPaddingLR + this.boxBorder)*2 + this.UCBoxMarginR + this.boxMarginLR)
+      const boxBase1 = (this.boxWidth + (this.boxMarginLR + this.boxBorder + this.boxPaddingLR) * 2)
+      const boxBase2 = (this.boxWidth + (this.boxPaddingLR + this.boxBorder) * 2 + this.UCBoxMarginR + this.boxMarginLR)
       const boxToUrlPage = this.urlPageBorder * 2
-      let base = 240
-      let num = Math.floor((this.windowWidth - boxBase1 + boxBase2 - boxToUrlPage - base) / ((this.unitnum-1)*boxBase1 + boxBase2))
+      const base = 240
+      const num = Math.floor((this.windowWidth - boxBase1 + boxBase2 - boxToUrlPage - base) / ((this.unitnum - 1) * boxBase1 + boxBase2))
       return num
     },
     urlListStyle: function() {
-      const boxBase1 = (this.boxWidth + (this.boxMarginLR + this.boxBorder + this.boxPaddingLR)*2)
-      const boxBase2 = (this.boxWidth + (this.boxPaddingLR + this.boxBorder)*2 + this.UCBoxMarginR + this.boxMarginLR) 
+      const boxBase1 = (this.boxWidth + (this.boxMarginLR + this.boxBorder + this.boxPaddingLR) * 2)
+      const boxBase2 = (this.boxWidth + (this.boxPaddingLR + this.boxBorder) * 2 + this.UCBoxMarginR + this.boxMarginLR)
       const boxToUrlPage = this.urlPageBorder * 2
-      const width = ((this.unitnum-1)*this.colnum + 1)*boxBase1 + (this.colnum - 1)*boxBase2 + boxToUrlPage;
+      const width = ((this.unitnum - 1) * this.colnum + 1) * boxBase1 + (this.colnum - 1) * boxBase2 + boxToUrlPage
       return { width: width + 'px' }
     },
     boxStyle: function() {
@@ -246,13 +249,13 @@ export default {
       const pageIndex = this.item.pageIndex
       const groupIndex = this.item.groupIndex
       const urlIndex = this.item.urlIndex
-      let page = JSON.parse(JSON.stringify(this.urlList[pageIndex]))
-      if (type == 'url') {
+      const page = JSON.parse(JSON.stringify(this.urlList[pageIndex]))
+      if (type === 'url') {
         page.page[groupIndex].group[urlIndex].url = url
         page.page[groupIndex].group[urlIndex].title = title
-      } else if (type == 'group') {
+      } else if (type === 'group') {
         page.page[groupIndex].title = title
-      } else if (type == 'page') {
+      } else if (type === 'page') {
         page.title = title
       }
       this.urlList[pageIndex] = page

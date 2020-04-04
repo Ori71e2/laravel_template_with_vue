@@ -1,5 +1,5 @@
 import fetch from '@/utils/fetch'
-import {order_baseUrl as baseUrl} from './api'
+import { order_baseUrl as baseUrl } from './api'
 
 export function getInfo(searchObj = {}, page = 1, pageSize = 10, id) {
   return fetch({
@@ -11,49 +11,48 @@ export function getInfo(searchObj = {}, page = 1, pageSize = 10, id) {
         order_number: searchObj.order_number,
         merchant_number: searchObj.merchant_number,
         merchant_name: searchObj.merchant_name,
-        status: searchObj.status,
+        status: searchObj.status
     }
   })
 }
 
-export function getInfoById (id) {
+export function getInfoById(id) {
   return fetch({
     url: baseUrl + '/' + id,
-    method: 'get',
+    method: 'get'
   })
 }
 
-export function updateInfo (id, data) {
-
+export function updateInfo(id, data) {
     if (typeof data.order_time === 'string') {
-      data.order_time = Math.ceil(Date.parse(data.order_time)/1000)
+      data.order_time = Math.ceil(Date.parse(data.order_time) / 1000)
     } else {
-      data.order_time =Math.ceil(((data.order_time).getTime())/1000)
+      data.order_time = Math.ceil(((data.order_time).getTime()) / 1000)
     }
     return fetch({
-      url: baseUrl +'/' + id,
+      url: baseUrl + '/' + id,
       method: 'PATCH',
-      data,
+      data
     })
 }
 
-export function deleteInfoById (id) {
+export function deleteInfoById(id) {
   return fetch({
-    url: baseUrl +'/' + id,
-    method: 'delete',
+    url: baseUrl + '/' + id,
+    method: 'delete'
   })
 }
 
-export function addInfo (data) {
-  data.order_time =Math.ceil(((data.order_time).getTime())/1000)
+export function addInfo(data) {
+  data.order_time = Math.ceil(((data.order_time).getTime()) / 1000)
   return fetch({
     url: baseUrl,
     method: 'post',
-    data,
+    data
   })
 }
 
-export function deleteAll( params) {
+export function deleteAll(params) {
   return fetch({
      url: baseUrl + '/deleteAll',
      method: 'post',
@@ -63,26 +62,25 @@ export function deleteAll( params) {
   })
 }
 
-
 // 获取订单对应的产品信息
 
-export function getProductsById (id) {
+export function getProductsById(id) {
   return fetch({
     url: baseUrl + '/' + id + '/products',
-    method: 'get',
+    method: 'get'
   })
 }
 
-export function getEnableProductsById (id) {
+export function getEnableProductsById(id) {
   return fetch({
     url: baseUrl + '/' + id + '/enable',
-    method: 'get',
+    method: 'get'
   })
 }
 
-export function getSummaryById (id) {
+export function getSummaryById(id) {
   return fetch({
     url: baseUrl + '/' + id + '/summary',
-    method: 'get',
+    method: 'get'
   })
 }

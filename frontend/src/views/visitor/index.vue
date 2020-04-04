@@ -4,7 +4,7 @@
     <el-header>
       <div>
         <el-dropdown>
-          <i class="el-icon-setting" style="margin-right: 10px"></i>
+          <i class="el-icon-setting" style="margin-right: 10px" />
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item>查看</el-dropdown-item>
             <el-dropdown-item>新增</el-dropdown-item>
@@ -13,11 +13,10 @@
         </el-dropdown>
         <div style="width: 40px; margin: 0px 10px"><span>王小虎</span></div>
       </div>
-      <div class="transiton"/>
+      <div class="transiton" />
     </el-header>
     <el-container>
-      <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
-      </el-aside>
+      <el-aside width="200px" style="background-color: rgb(238, 241, 246)" />
       <pagenav :list.sync="urlPageList" :drag.sync="drag" :position.sync="position" :edit="edit" class="pagenav" />
       <el-main>
         {{ urlPageList }}

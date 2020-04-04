@@ -8,7 +8,7 @@ import locale from 'element-ui/lib/locale/lang/zh-CN'
 
 import '@/styles/index.scss' // global css
 
-import animated from 'animate.css' 
+import animated from 'animate.css'
 
 import App from './App'
 import store from './store'
@@ -36,11 +36,9 @@ import contentmenu from 'v-contextmenu'
 import 'v-contextmenu/dist/index.css'
 Vue.use(contentmenu)
 
-
 // 注册全局指令
 import permission from '@/directive/permission/index.js'
 Vue.use(permission)
-
 
 Vue.config.productionTip = false
 

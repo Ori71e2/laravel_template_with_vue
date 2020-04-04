@@ -2,7 +2,7 @@
 <template>
   <div class="url-page-nav">
     <draggable v-model="urlList" v-bind="dragOptions" :move="onMove" element="div" @start="dragStart" @end="dragEnd">
-      <transition v-for="(page, pageIndex) in urlList" :key="pageIndex" name="fade" >
+      <transition v-for="(page, pageIndex) in urlList" :key="pageIndex" name="fade">
         <div class="url-page-title">
           <a v-if="!edit">
             <span @click="handleScroll(pageIndex)">{{ page.title }}</span>
@@ -15,7 +15,7 @@
     </draggable>
     <el-dialog title="修改" :visible.sync="dialogVisible" width="30%" :before-close="handleClose" :append-to-body="true" style="z-index: 199!important">
       <span>这是一段信息</span>
-      <el-input placeholder="请输入内容" v-model="item.title">
+      <el-input v-model="item.title" placeholder="请输入内容">
         <template slot="prepend">Title</template>
       </el-input>
       <span slot="footer" class="dialog-footer">
@@ -35,11 +35,11 @@ export default {
   props: {
     'list': {
       type: Array,
-      default: []
+      default: function() { return [] }
     },
-    'drag' : {
+    'drag': {
       type: Object,
-      default: {}
+      default: function() { return {} }
     },
     'edit': {
       type: Boolean,
@@ -48,9 +48,6 @@ export default {
     'position': {
       type: Number,
       default: 0
-    },
-    'trigger': {
-      type: false
     }
   },
   data() {
@@ -139,7 +136,7 @@ export default {
     handleConfirm() {
       const title = this.item.title
       const pageIndex = this.item.pageIndex
-      let page = this.urlList[pageIndex].slice()
+      const page = this.urlList[pageIndex].slice()
       page.title = title
       this.urlList.splice(pageIndex, 1, page)
       this.dialogVisible = false

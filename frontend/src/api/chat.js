@@ -8,9 +8,9 @@ export function sendChat(data) {
   })
 }
 
-export function getCustomer(){
-  return new Promise((resolve, reject)=>{
-       let data = {
+export function getCustomer() {
+  return new Promise((resolve, reject) => {
+       const data = {
           name: 'wmhello'
        }
        resolve(data)

@@ -1,8 +1,8 @@
-let UPLOAD = {
+const UPLOAD = {
   data() {
     return {
-     isShowUpload: false,
-    };
+     isShowUpload: false
+    }
   },
   methods: {
     upload() {
@@ -10,13 +10,12 @@ let UPLOAD = {
     },
     closeUpload() {
      this.isShowUpload = false
-    },
+    }
   },
   mounted() {
   },
   created() {
-  },
-};
-
+  }
+}
 
 export default UPLOAD

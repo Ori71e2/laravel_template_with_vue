@@ -1,12 +1,12 @@
 
 import store from '@/store'
 
-export default{
+export default {
   inserted(el, binding, vnode) {
     const { value } = binding
     const roles = store.getters && store.getters.roles
-    let routeName = store.state.user.permissions
-    let  hasPermission = false
+    const routeName = store.state.user.permissions
+    let hasPermission = false
 
     //   // 对admin角色自动显示所有按钮
 

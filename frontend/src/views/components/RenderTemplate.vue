@@ -11,18 +11,18 @@ export default {
       default: true
     }
   },
-  render: function(h){
+  render: function(h) {
     if (this.isShow) {
       return h('div',
       [
-        h('p',[h('span', '子元素'), h('', '测试')]),  // jsx react.js
+        h('p', [h('span', '子元素'), h('', '测试')]), // jsx react.js
         h('p', this.content)
       ]
     )
   } else {
     return h('div',
     [
-      h('p',[h('span', '子元素')])
+      h('p', [h('span', '子元素')])
     ]
   )
   }

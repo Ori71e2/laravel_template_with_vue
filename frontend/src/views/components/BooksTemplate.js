@@ -12,7 +12,7 @@ export default {
     }
   },
   render: function(h) {
-    return h('ul',{
+    return h('ul', {
         style: {
           color: '#f00'
         }

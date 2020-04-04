@@ -3,19 +3,19 @@
 </template>
 
 <script>
-import { test } from "@/api/pdf.js";
-import axios from "axios";
+import { test } from '@/api/pdf.js'
+import axios from 'axios'
 export default {
-  name: "PdfIndex",
+  name: 'PdfIndex',
   async created() {
     const res = await axios({
-      method: "post",
-      url: "http://backend.ouenyione.com/api/test",
-      responseType: "blob"
-    });
-    console.log(res);
+      method: 'post',
+      url: 'http://backend.ouenyione.com/api/test',
+      responseType: 'blob'
+    })
+    console.log(res)
   }
-};
+}
 </script>
 
 <style>
