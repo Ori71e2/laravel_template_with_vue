@@ -1,29 +1,31 @@
 
 <template>
-  <el-container style="height: 100%; border: 1px solid #eee">
-    <el-header>
-      <div>
-        <el-dropdown>
-          <i class="el-icon-setting" style="margin-right: 10px" />
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item>查看</el-dropdown-item>
-            <el-dropdown-item>新增</el-dropdown-item>
-            <el-dropdown-item>删除</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-        <div style="width: 40px; margin: 0px 10px"><span>王小虎</span></div>
-      </div>
-      <div class="transiton" />
-    </el-header>
-    <el-container>
-      <el-aside width="200px" style="background-color: rgb(238, 241, 246)" />
-      <pagenav class="pagenav" />
-      <el-main>
-        <url />
-      </el-main>
-      <operate class="operate" />
+  <div>
+    <el-container style="height: 100%; border: 1px solid #eee">
+      <el-header>
+        <div>
+          <el-dropdown>
+            <i class="el-icon-setting" style="margin-right: 10px" />
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item>查看</el-dropdown-item>
+              <el-dropdown-item>新增</el-dropdown-item>
+              <el-dropdown-item>删除</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+          <div style="width: 40px; margin: 0px 10px"><span>王小虎</span></div>
+        </div>
+        <div class="transiton" />
+      </el-header>
+      <el-container>
+        <el-aside width="200px" />
+        <el-main>
+          <url />
+        </el-main>
+      </el-container>
     </el-container>
-  </el-container>
+    <pagenav class="pagenav" />
+    <operate class="operate" />
+  </div>
 </template>>
 
 <script>
@@ -105,6 +107,7 @@ $headerHeight: 80px;
   }
   .el-aside {
     color: #333;
+    background-color: #F5F6F8;
     z-index: 99;
   }
   .pagenav {

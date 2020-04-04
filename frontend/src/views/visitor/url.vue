@@ -1,7 +1,6 @@
 
 <template>
   <div :style="urlListStyle" class="url-list">
-    <div>{{ distance }}</div>
     <div v-for="(urlPage, pageIndex) in urlList" :key="pageIndex" :ref="'anchor' + pageIndex">
       <!-- <div :ref="'anchor' + pageIndex" style="display: none;"></div> -->
       <draggable v-model="urlPage.page" v-bind="groupDragOptions" :move="onMove" element="div" @start="groupStart" @end="groupEnd">
@@ -75,6 +74,11 @@ export default {
       }
     }
   },
+  watch: {
+    scroll: function(newVal, oldVal) {
+      window.scrollTo(0, this.distance)
+    }
+  },
   computed: {
     urlList: {
       get() {
@@ -100,22 +104,18 @@ export default {
         this.$store.dispatch('url/setEdit', val)
       }
     },
+    scroll() {
+      return this.$store.state.url.scroll
+    },
     distance: {
       get() {
         const index = 'anchor' + this.$store.state.url.position
         if (this.$refs[index]) {
-          console.log(this.$refs[index][0].offsetTop)
-          this.$nextTick(() => {
-            // document.body.scrollTop（x, y）
-            window.scroll(0, this.$refs[index][0].offsetTop - 80)
-          })
-           window.scroll(0, this.$refs[index][0].offsetTop - 80)
+          const length = this.$refs[index][0].offsetTop - 80
+          return length
         }
-        return this.index
+        return 0
       }
-      // set(val) {
-      //   this.$emit('update:position', val)
-      // }
     },
     drag: {
       get() {
@@ -182,8 +182,6 @@ export default {
       return { width: this.boxWidth + 'px', borderWidth: this.boxBorder + 'px' }
     }
   },
-  watch: {
-  },
   created() {
     this.getWindowWidth()
     window.addEventListener('resize', this.handleWindowResize, false)
@@ -196,7 +194,6 @@ export default {
   methods: {
     handleWindowResize() {
       this.windowWidth = document.body.clientWidth
-      console.log(document.body.clientWidth)
     },
     onMove({ relatedContext, draggedContext }) {
       const relatedElement = relatedContext.element
@@ -278,6 +275,8 @@ export default {
   $boxMarginLR: 1px;
   $UCBoxMarginR: 50px;
   .url-list {
+    width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;

@@ -75,6 +75,14 @@ export default {
         this.$store.dispatch('url/setPosition', val)
       }
     },
+    scroll: {
+      get() {
+        return this.$store.state.url.scroll
+      },
+      set(val) {
+        this.$store.dispatch('url/setScroll', val)
+      }
+    },
     dragOptions() {
       return {
         animation: 0,
@@ -109,6 +117,7 @@ export default {
     },
     handleScroll(pageIndex) {
       this.pageIndex = pageIndex
+      this.scroll = !this.scroll
     },
     handleEdit(pageIndex) {
       this.item.pageIndex = pageIndex

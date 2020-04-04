@@ -8,7 +8,8 @@ const state = {
     group: false,
     box: false
   },
-  position: 0
+  position: 0,
+  scroll: false
 }
 // history index 与list一起初始化及变更， index 指向当前历史
 const mutations = {
@@ -26,7 +27,7 @@ const mutations = {
     }
   },
   FORWARD_HISTORY: (state) => {
-    if(state.index+1 < state,history.length) {
+    if(state.index+1 < state.history.length) {
       state.index = state.index + 1
       state.list = JSON.parse(state.history[state.index])
     } else {
@@ -41,8 +42,11 @@ const mutations = {
   },
   SET_POSITION: (state, val) => {
     state.position = val
+  },
+  SET_SCROLL: (state, val) => {
+    state.scroll = val
   }
-}
+ }
 
 const actions = {
   setList({
@@ -74,8 +78,13 @@ const actions = {
     commit
   }, val) {
     commit('SET_POSITION', val)
+  },
+  setScroll({
+    commit
+  }, val) {
+    commit('SET_SCROLL', val)
   }
-}
+ }
 
 export default {
   namespaced: true,

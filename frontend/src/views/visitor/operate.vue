@@ -2,11 +2,11 @@
 <template>
   <div class="operate">
     <div v-if="visible" class="content box animated fadeInUp">
-      <i :class="[isEdit ? activeClass : inactiveClass]" class="el-icon-edit" @click="setEdit" />
-      <i :class="[isDrag ? activeClass : inactiveClass]" class="el-icon-rank" @click="setDrag" />
+      <i @click="setEdit" :class="[isEdit ? activeClass : inactiveClass]" class="el-icon-edit" />
+      <i @click="setDrag" :class="[isDrag ? activeClass : inactiveClass]" class="el-icon-rank" />
       <i :class="[isRecycleBinEmpty ? inactiveClass : activeClass]" class="el-icon-delete" />
-      <!-- <i class="el-icon-back"></i>
-      <i class="el-icon-right"></i> -->
+      <i @click="back" :class="[isBack ? activeClass : inactiveClass]" class="el-icon-arrow-left" />
+      <i @click="forward" :class="[isForward ? activeClass : inactiveClass]" class="el-icon-arrow-right" />
       <i :class="[isUpdate ? activeClass : inactiveClass]" class="el-icon-circle-check" @click="save()" />
     </div>
     <div v-else class="content" />
@@ -40,6 +40,11 @@ export default {
         this.$store.dispatch('url/setList', val)
       }
     },
+    historyList: {
+      get() {
+        return this.$store.state.url.history.length
+      }
+    },
     drag: {
       get() {
         return this.$store.state.url.drag
@@ -64,13 +69,18 @@ export default {
         this.$store.dispatch('url/setEdit', val)
       }
     },
+    isBack() {
+      return this.$store.state.url.index <= 0 ? false : true
+    },
+    isForward() {
+      return this.$store.state.url.index >= this.$store.state.url.history.length-1 ? false : true
+    },
     isUpdate() {
       const oldString = JSON.stringify(this.oldUrlList)
       const newString = JSON.stringify(this.urlList)
       const oldLen = oldString.length
       const newLen = newString.length
       if (this.oldUrlList.length != 0) {
-        console.log('update')
         if (oldLen != newLen) {
           return true
         } else {
@@ -109,6 +119,12 @@ export default {
     },
     save() {
       this.oldUrlList = JSON.parse(JSON.stringify(this.urlList))
+    },
+    back() {
+      this.$store.dispatch('url/backwardHistory')
+    },
+    forward() {
+      this.$store.dispatch('url/forwardHistory')
     }
   }
 }
