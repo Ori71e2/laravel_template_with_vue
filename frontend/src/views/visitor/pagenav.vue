@@ -4,7 +4,7 @@
     <draggable v-model="urlList" v-bind="dragOptions" :move="onMove" element="div" @start="dragStart" @end="dragEnd">
       <transition v-for="(page, pageIndex) in urlList" :key="pageIndex" name="fade">
         <div class="url-page-title">
-          <a v-if="!edit">
+          <a v-if="!isEdit">
             <span @click="handleScroll(pageIndex)">{{ page.title }}</span>
           </a>
           <a v-else>
@@ -27,28 +27,11 @@
 </template>>
 
 <script>
+import { mapGetters } from 'vuex'
 import draggable from 'vuedraggable'
 export default {
   components: {
     draggable
-  },
-  props: {
-    'list': {
-      type: Array,
-      default: function() { return [] }
-    },
-    'drag': {
-      type: Object,
-      default: function() { return {} }
-    },
-    'edit': {
-      type: Boolean,
-      default: false
-    },
-    'position': {
-      type: Number,
-      default: 0
-    }
   },
   data() {
     return {
@@ -62,26 +45,34 @@ export default {
   computed: {
     urlList: {
       get() {
-        return JSON.parse(JSON.stringify(this.list))
+        return this.$store.getters.urlList
       },
       set(val) {
-        this.$emit('update:list', JSON.parse(JSON.stringify(val)))
+        this.$store.dispatch('url/setList', val)
+      }
+    },
+    drag: {
+      get() {
+        return this.$store.state.url.drag
+      },
+      set(val) {
+        this.$store.dispatch('url/setDrag', val)
+      }
+    },
+    isEdit: {
+      get() {
+        return this.$store.state.url.edit
+      },
+      set(val) {
+        this.$store.dispatch('url/setEdit', val)
       }
     },
     pageIndex: {
       get() {
-        return this.position
+        return this.$store.state.url.position
       },
       set(val) {
-        this.$emit('update:position', val)
-      }
-    },
-    divDrag: {
-      get() {
-        return this.drag
-      },
-      set(val) {
-        this.$emit('update:drag', val)
+        this.$store.dispatch('url/setPosition', val)
       }
     },
     dragOptions() {
@@ -89,18 +80,12 @@ export default {
         animation: 0,
         group: 'description',
         // disabled: true,
-        disabled: !this.divDrag.page,
+        disabled: !this.drag.page,
         ghostClass: 'ghost'
       }
     }
   },
   watch: {
-  },
-  created() {
-  },
-  mounted() {
-  },
-  destroyed() {
   },
   methods: {
     onMove({ relatedContext, draggedContext }) {
@@ -111,17 +96,16 @@ export default {
       )
     },
     dragStart() {
-      Object.keys(this.divDrag).forEach((key) => {
+      Object.keys(this.drag).forEach((key) => {
         if (key !== 'page') {
-          this.divDrag[key] = false
+          this.drag[key] = false
         }
       })
     },
     dragEnd() {
-      Object.keys(this.divDrag).forEach((key) => {
-        this.divDrag[key] = true
+      Object.keys(this.drag).forEach((key) => {
+        this.drag[key] = true
       })
-      this.updateList()
     },
     handleScroll(pageIndex) {
       this.pageIndex = pageIndex
@@ -140,9 +124,6 @@ export default {
       page.title = title
       this.urlList.splice(pageIndex, 1, page)
       this.dialogVisible = false
-    },
-    updateList() {
-      this.urlList = JSON.parse(JSON.stringify(this.list))
     }
   }
 }

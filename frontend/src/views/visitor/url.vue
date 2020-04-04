@@ -1,19 +1,19 @@
 
 <template>
   <div :style="urlListStyle" class="url-list">
-    {{ distance }}
+    <div>{{ distance }}</div>
     <div v-for="(urlPage, pageIndex) in urlList" :key="pageIndex" :ref="'anchor' + pageIndex">
       <!-- <div :ref="'anchor' + pageIndex" style="display: none;"></div> -->
       <draggable v-model="urlPage.page" v-bind="groupDragOptions" :move="onMove" element="div" @start="groupStart" @end="groupEnd">
         <div v-for="(urlGroup, groupIndex) in urlPage.page" :key="groupIndex" :style="urlGroupStyle" class="url-group">
           <div :style="urlGroupTitleStyle" class="url-group-title">
-            <span v-if="!edit">{{ urlGroup.title }}</span>
+            <span v-if="!isEdit">{{ urlGroup.title }}</span>
             <a v-else @click="handleEdit('group', pageIndex, groupIndex, -1)">{{ urlGroup.title }}</a>
           </div>
           <draggable v-model="urlGroup.group" v-bind="boxDragOptions" :move="onMove" element="div" :class="pageClass" @start="boxStart" @end="boxEnd">
             <transition v-for="(url, urlIndex) in urlGroup.group" :key="urlIndex" name="fade">
               <div :style="boxStyle" class="url-box">
-                <a v-if="!edit" href="url.url" target="_blank">
+                <a v-if="!isEdit" href="url.url" target="_blank">
                   <span>{{ url.title }}</span>
                 </a>
                 <a v-else>
@@ -52,24 +52,6 @@ export default {
   components: {
     draggable
   },
-  props: {
-    'list': {
-      type: Array,
-      default: function() { return [] }
-    },
-    'drag': {
-      type: Object,
-      default: function() { return {} }
-    },
-    'edit': {
-      type: Boolean,
-      default: false
-    },
-    'position': {
-      type: Number,
-      default: 1
-    }
-  },
   data() {
     return {
       windowWidth: 1000,
@@ -96,18 +78,38 @@ export default {
   computed: {
     urlList: {
       get() {
-        return JSON.parse(JSON.stringify(this.list))
+        return this.$store.getters.urlList
       },
       set(val) {
-        this.$emit('update:list', JSON.parse(JSON.stringify(val)))
+        this.$store.dispatch('url/setList', val)
+      }
+    },
+    drag: {
+      get() {
+        return this.$store.state.url.drag
+      },
+      set(val) {
+        this.$store.dispatch('url/setDrag', val)
+      }
+    },
+    isEdit: {
+      get() {
+        return this.$store.state.url.edit
+      },
+      set(val) {
+        this.$store.dispatch('url/setEdit', val)
       }
     },
     distance: {
       get() {
-        const index = 'anchor' + this.position
+        const index = 'anchor' + this.$store.state.url.position
         if (this.$refs[index]) {
-          // console.log(this.$refs[index][0])
-          window.scrollTo(0, this.$refs[index][0].offsetTop - 80)
+          console.log(this.$refs[index][0].offsetTop)
+          this.$nextTick(() => {
+            // document.body.scrollTop（x, y）
+            window.scroll(0, this.$refs[index][0].offsetTop - 80)
+          })
+           window.scroll(0, this.$refs[index][0].offsetTop - 80)
         }
         return this.index
       }
@@ -115,12 +117,12 @@ export default {
       //   this.$emit('update:position', val)
       // }
     },
-    divDrag: {
+    drag: {
       get() {
-        return this.drag
+        return this.$store.state.url.drag
       },
       set(val) {
-        this.$emit('update:drag', val)
+        this.$store.dispatch('url/setDrag', val)
       }
     },
     itemType() {
@@ -131,7 +133,7 @@ export default {
         animation: 0,
         group: 'description',
         // disabled: true,
-        disabled: !this.divDrag.box,
+        disabled: !this.drag.box,
         ghostClass: 'ghost'
       }
     },
@@ -139,7 +141,7 @@ export default {
       return {
         animation: 0,
         group: 'description',
-        disabled: !this.divDrag.group,
+        disabled: !this.drag.group,
         ghostClass: 'ghost'
       }
     },
@@ -204,28 +206,28 @@ export default {
       )
     },
     groupStart() {
-      Object.keys(this.divDrag).forEach((key) => {
+      Object.keys(this.drag).forEach((key) => {
         if (key !== 'group') {
-          this.divDrag[key] = false
+          this.drag[key] = false
         }
       })
     },
     groupEnd() {
-      Object.keys(this.divDrag).forEach((key) => {
-        this.divDrag[key] = true
+      Object.keys(this.drag).forEach((key) => {
+        this.drag[key] = true
       })
       this.setUrlList()
     },
     boxStart() {
-      Object.keys(this.divDrag).forEach((key) => {
+      Object.keys(this.drag).forEach((key) => {
         if (key !== 'box') {
-          this.divDrag[key] = false
+          this.drag[key] = false
         }
       })
     },
     boxEnd() {
-      Object.keys(this.divDrag).forEach((key) => {
-        this.divDrag[key] = true
+      Object.keys(this.drag).forEach((key) => {
+        this.drag[key] = true
       })
       this.setUrlList()
     },
@@ -263,7 +265,6 @@ export default {
       this.dialogVisible = false
     },
     setUrlList() {
-      // this.$emit('update:trigger', !this.trigger)
       this.urlList = JSON.parse(JSON.stringify(this.urlList))
     }
   }

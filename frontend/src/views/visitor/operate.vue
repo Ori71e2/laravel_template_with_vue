@@ -20,20 +20,6 @@ export default {
   components: {
     draggable
   },
-  props: {
-    'list': {
-      type: Array,
-      default: []
-    },
-    'drag': {
-      type: Object,
-      default: {}
-    },
-    'edit': {
-      type: Boolean,
-      default: false
-    }
-  },
   data() {
     return {
       visible: false,
@@ -42,17 +28,24 @@ export default {
       activeClass: 'active',
       inactiveClass: 'inactive',
       isDrag: false,
-      oldUrlList: [],
-      historyUrlListQueue: []
+      oldUrlList: []
     }
   },
   computed: {
     urlList: {
       get() {
-        return JSON.parse(JSON.stringify(this.list))
+        return this.$store.getters.urlList
       },
       set(val) {
-        this.$emit('update:list', JSON.parse(JSON.stringify(val)))
+        this.$store.dispatch('url/setList', val)
+      }
+    },
+    drag: {
+      get() {
+        return this.$store.state.url.drag
+      },
+      set(val) {
+        this.$store.dispatch('url/setDrag', val)
       }
     },
     pageIndex: {
@@ -65,10 +58,10 @@ export default {
     },
     isEdit: {
       get() {
-        return this.edit
+        return this.$store.state.url.edit
       },
       set(val) {
-        this.$emit('update:edit', val)
+        this.$store.dispatch('url/setEdit', val)
       }
     },
     isUpdate() {
@@ -104,16 +97,14 @@ export default {
       this.visible = !this.visible
     },
     setDrag() {
-      const flag = this.drag
-      this.isDrag = !this.isDrag
       Object.keys(this.drag).forEach((key) => {
-        flag[key] = this.isDrag
+        this.drag[key] = !this.drag[key]
       })
-      this.$emit('update:drag', flag)
+      this.isDrag = !this.isDrag
       this.save()
     },
     setEdit() {
-      this.$emit('update:edit', !this.isEdit)
+      isEdit =  !this.isEdit
       this.save()
     },
     save() {

@@ -17,12 +17,11 @@
     </el-header>
     <el-container>
       <el-aside width="200px" style="background-color: rgb(238, 241, 246)" />
-      <pagenav :list.sync="urlPageList" :drag.sync="drag" :position.sync="position" :edit="edit" class="pagenav" />
+      <pagenav class="pagenav" />
       <el-main>
-        {{ urlPageList }}
-        <url :list.sync="urlPageList" :drag.sync="drag" :position.sync="position" :edit="edit" />
+        <url />
       </el-main>
-      <operate :list.sync="urlPageList" :drag.sync="drag" :edit.sync="edit" class="operate" />
+      <operate class="operate" />
     </el-container>
   </el-container>
 </template>>
@@ -33,6 +32,7 @@ import axios from 'axios'
 import url from './url'
 import pagenav from './pagenav'
 import operate from './operate'
+import { mapGetters } from 'vuex'
 export default {
   components: {
     url, pagenav, operate
@@ -46,18 +46,19 @@ export default {
     return {
       tableData: Array(20).fill(item),
       urlPageList: [],
-      drag: {
-        page: false,
-        group: false,
-        box: false
-      },
       edit: false,
       position: 0
     }
   },
+  computed: {
+    ...mapGetters([
+      'urlList'
+    ]),
+  },
   created() {
     getUrlPageList().then(response => {
       this.urlPageList = JSON.parse(response.data)
+      this.$store.dispatch('url/setList', this.urlPageList)
     })
   }
 }
