@@ -126,7 +126,7 @@ $headerHeight: 80px;
     right: 25px;
     margin-right: 10px;
     width: 20px;
-    height: 100px;
+    height: 250px;
     z-index: 100;
   }
 </style>

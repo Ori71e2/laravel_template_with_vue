@@ -38,7 +38,7 @@ const mutations = {
     state.drag = JSON.parse(JSON.stringify(val))
   },
   SET_EDIT: (state, val) => {
-    state.exit = val
+    state.edit = val
   },
   SET_POSITION: (state, val) => {
     state.position = val

@@ -2,12 +2,27 @@
 <template>
   <div class="operate">
     <div v-if="visible" class="content box animated fadeInUp">
-      <i @click="setEdit" :class="[isEdit ? activeClass : inactiveClass]" class="el-icon-edit" />
-      <i @click="setDrag" :class="[isDrag ? activeClass : inactiveClass]" class="el-icon-rank" />
-      <i :class="[isRecycleBinEmpty ? inactiveClass : activeClass]" class="el-icon-delete" />
-      <i @click="back" :class="[isBack ? activeClass : inactiveClass]" class="el-icon-arrow-left" />
-      <i @click="forward" :class="[isForward ? activeClass : inactiveClass]" class="el-icon-arrow-right" />
-      <i :class="[isUpdate ? activeClass : inactiveClass]" class="el-icon-circle-check" @click="save()" />
+      <el-tooltip :disabled="disabled" class="item" effect="dark" content="标签管理" placement="left">
+        <i @click="setTag" :class="[isTag ? activeClass : inactiveClass]" class="el-icon-paperclip" />
+      </el-tooltip>
+      <el-tooltip :disabled="disabled" class="item" effect="dark" content="编辑" placement="left">
+        <i @click="setEdit" :class="[isEdit ? activeClass : inactiveClass]" class="el-icon-edit" />
+      </el-tooltip>
+      <el-tooltip :disabled="disabled" class="item" effect="dark" content="拖拽" placement="left">
+        <i @click="setDrag" :class="[isDrag ? activeClass : inactiveClass]" class="el-icon-rank" />
+      </el-tooltip>
+      <el-tooltip :disabled="disabled" class="item" effect="dark" content="回收站" placement="left">
+        <i :class="[isRecycleBinEmpty ? inactiveClass : activeClass]" class="el-icon-delete" />
+      </el-tooltip>
+      <el-tooltip :disabled="disabled" class="item" effect="dark" content="后退" placement="left">
+        <i @click="back" :class="[isBack ? activeClass : inactiveClass]" class="el-icon-arrow-left" />
+      </el-tooltip>
+      <el-tooltip :disabled="disabled" class="item" effect="dark" content="前进" placement="left">
+        <i @click="forward" :class="[isForward ? activeClass : inactiveClass]" class="el-icon-arrow-right" />
+      </el-tooltip>
+      <el-tooltip :disabled="disabled" class="item" effect="dark" content="保存" placement="left">
+        <i :class="[isUpdate ? activeClass : inactiveClass]" class="el-icon-circle-check" @click="save()" />
+      </el-tooltip>
     </div>
     <div v-else class="content" />
     <div slot="reference" class="button" @click="popOver"><i class="el-icon-caret-top caret" /></div>
@@ -28,7 +43,10 @@ export default {
       activeClass: 'active',
       inactiveClass: 'inactive',
       isDrag: false,
-      oldUrlList: []
+      oldUrlList: [],
+      timer: null,
+      disabled: true,
+      isTag: false
     }
   },
   computed: {
@@ -105,6 +123,13 @@ export default {
   methods: {
     popOver() {
       this.visible = !this.visible
+      // 500时间要与动画一致
+      if (this.visible) {
+        this.timer = setTimeout(() => { this.disabled = false }, 500)
+      } else {
+        window.clearTimeout(this.timer)
+        this.disabled = true
+      }
     },
     setDrag() {
       Object.keys(this.drag).forEach((key) => {
@@ -114,7 +139,7 @@ export default {
       this.save()
     },
     setEdit() {
-      isEdit =  !this.isEdit
+      this.isEdit =  !this.isEdit
       this.save()
     },
     save() {
@@ -125,6 +150,9 @@ export default {
     },
     forward() {
       this.$store.dispatch('url/forwardHistory')
+    },
+    setTag() {
+      this.isTag = !this.isTag
     }
   }
 }
@@ -143,7 +171,7 @@ export default {
   justify-content: space-between;
   margin: 20px auto;
   width: 30px;
-  height: 210px;
+  height: 280px;
   overflow: auto;
   i {
     width: 100%;
