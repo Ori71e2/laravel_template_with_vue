@@ -6,3 +6,10 @@ export function getUrlPageList() {
     method: 'get'
   })
 }
+
+export function getUrlTag() {
+  return request({
+    url: '/url/tag',
+    method: 'get'
+  })
+}

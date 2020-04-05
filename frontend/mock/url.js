@@ -4,6 +4,24 @@ const Random = Mock.Random
 export default [
   // url list
   {
+    url: '/url/tag',
+    type: 'get',
+    response: config => {
+      // [ {id: 'tag'}, {id: 'tag'}, {id: 'tag'}]
+      let tags = []
+      // tags.push({id: 'T20200401', tag: '编程'})
+      // let date = new Date()
+      let base = 1586080245960
+      for(var i =0; i< 20; i++) {
+        tags.push({id: 'T'+base+i, title: Random.cword(2,4)})
+      }
+      return {
+        code: 20000,
+        data: JSON.stringify(tags)
+      }
+    }
+  },
+  {
     url: '/url/list',
     type: 'get',
     response: config => {

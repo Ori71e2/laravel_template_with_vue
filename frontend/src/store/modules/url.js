@@ -1,5 +1,6 @@
 const state = {
   list: [],
+  tag: [],
   history: [],
   index: -1,
   edit: false,
@@ -8,6 +9,7 @@ const state = {
     group: false,
     box: false
   },
+  tagPopover: false,
   position: 0,
   scroll: false
 }
@@ -45,6 +47,12 @@ const mutations = {
   },
   SET_SCROLL: (state, val) => {
     state.scroll = val
+  },
+  SET_TAG: (state, val) => {
+    state.tag = JSON.parse(JSON.stringify(val))
+  },
+  SET_TAG_POPOVER: (state, val) => {
+    state.tagPopover = val
   }
  }
 
@@ -83,6 +91,16 @@ const actions = {
     commit
   }, val) {
     commit('SET_SCROLL', val)
+  },
+  setTag({
+    commit
+  }, val) {
+    commit('SET_TAG', val)
+  },
+  setTagPopover({
+    commit
+  }, val) {
+    commit('SET_TAG_POPOVER', val)
   }
  }
 
