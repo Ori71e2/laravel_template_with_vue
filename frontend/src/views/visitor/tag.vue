@@ -1,8 +1,9 @@
 <template>
   <el-dialog title="标签列表" :visible.sync="isTag" width="70%" model-append-to-body class="dialog-custom">
     <div class="main">
+      {{ tagSelected }}
       <div class="tag-selected">
-        <draggable v-model="tagSelected" v-bind="dragOptions" element="div" :move="onMove" @start="dragStart" @end="dragEnd" class="dragarea">
+        <draggable v-model="tagSelected" v-bind="dragOptions" element="div" :group="{name: 'tag'}" :move="onMove" @start="dragStart" @end="dragEnd" class="dragarea">
           <transition v-for="tag in tagSelected" :key="tag.id" name="fade">
             <div class="tag-item">
               <el-tag class="item"> {{ tag.title }} </el-tag>
@@ -16,9 +17,9 @@
         </el-input>
       </div>
       <div class="tag-store">
-        <draggable v-model="urlTag" v-bind="dragOptions" element="div" :move="onMove" @start="dragStart" @end="dragEnd" class="dragarea">
+        <draggable v-model="urlTag" v-bind="dragOptions" element="div" :group="{ name: 'tag', pull: 'clone', put: false }" :clone="clone" :move="onMove" @start="storeDragStart" @end="storeDragEnd" class="dragarea">
           <transition v-for="tag in urlTag" :key="tag.id" name="fade">
-            <div class="tag-item">
+            <div class="tag-item" @dragstart="ondragstart(tag)">
               <el-tag class="item"> {{ tag.title }} </el-tag>
             </div>
           </transition>
@@ -42,7 +43,8 @@ export default {
   data() {
     return {
       search: '',
-      tagSelected: []
+      tagIdSelected: ['T15860802459600'],
+      cloneTag: ''
     }
   },
   computed: {
@@ -54,12 +56,33 @@ export default {
         this.$store.dispatch('url/setTag', val)
       }
     },
+    tagSelected: {
+      get() {
+        if (this.tagIdSelected.length === 0 || this.urlTag.length ===0) {
+          return []
+        } else {
+          const tag = this.tagIdSelected.map((id, index) => {
+            const filterTags = this.urlTag.filter(tag => { return tag.id === id})
+            if (filterTags.length > 0) {
+              return filterTags[0]
+            } else {
+              return
+            }
+          })
+          return tag
+        }
+      },
+      set(val) {
+        if (val) {
+          this.tagIdSelected = val.map(tag => { return tag.id })
+        }
+      }
+    },
     isTag: {
       get() {
         return this.$store.state.url.tagPopover
       },
       set(val) {
-        console.log('xx')
         this.$store.dispatch('url/setTagPopover', val)
       }
     },
@@ -96,6 +119,21 @@ export default {
     dragStart() {
     },
     dragEnd() {
+    },
+    storeDragStart() {
+    },
+    ondragstart(tag) {
+      this.cloneTag = tag
+    },
+    storeDragEnd() {
+    },
+    clone() {
+      if(this.tagIdSelected.length === 0) {
+        return { ...this.cloneTag }
+      } else if(this.tagIdSelected.every(id => { return id != this.cloneTag.id })) {
+        console.log(this.cloneTag)
+        return { ...this.cloneTag }
+      }
     }
   }
 }
@@ -141,7 +179,8 @@ $stars: (
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: flex-start;
-    div {
+    align-content: flex-start;
+    .tag-item {
       margin: 2px 4px;
       height: 32px;
       // background-color:rgba(255,255,255,0);
@@ -175,7 +214,8 @@ $stars: (
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: flex-start;
-    div {
+    align-content: flex-start;
+    .tag-item {
       margin: 2px 4px;
       height: 32px;
       // background-color:rgba(255,255,255,0);
@@ -185,9 +225,9 @@ $stars: (
       & div:nth-child(#{$i}n+#{$i}) {
         margin: 2px 4px;
         .item {
-          background-color: map-get($item, background-color) !important;
-          border-color: map-get($item, border-color) !important;
-          color: map-get($item, color) !important;
+          background-color: map-get($item, background-color);
+          border-color: map-get($item, border-color);
+          color: map-get($item, color);
         }
       }
     }
