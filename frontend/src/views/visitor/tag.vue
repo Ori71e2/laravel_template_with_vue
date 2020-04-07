@@ -1,9 +1,13 @@
 <template>
   <el-dialog title="标签列表" :visible.sync="isTag" width="70%" model-append-to-body class="dialog-custom">
     <div class="main">
-      {{ tagSelected }}
+      <!-- {{ urlTag }} -->
       <div class="tag-selected">
-        <draggable v-model="tagSelected" v-bind="dragOptions" element="div" :group="{name: 'tag'}" :move="onMove" @start="dragStart" @end="dragEnd" class="dragarea">
+        <div class="delete">
+          <div class="icon"><i class="el-icon-delete" /></div>
+          <draggable v-model="tagSelectedDeleted" v-bind="dragOptions" element="div" :group="{name: 'tag', put: ['tagSelected']}" class="drag" />
+        </div>
+        <draggable v-model="tagSelected" v-bind="dragOptions" element="div" :group="{name: 'tagSelected', put: ['tagStore']}" :move="onMove" @start="dragStart" @end="dragEnd" class="dragarea">
           <transition v-for="tag in tagSelected" :key="tag.id" name="fade">
             <div class="tag-item">
               <el-tag class="item"> {{ tag.title }} </el-tag>
@@ -17,9 +21,22 @@
         </el-input>
       </div>
       <div class="tag-store">
-        <draggable v-model="urlTag" v-bind="dragOptions" element="div" :group="{ name: 'tag', pull: 'clone', put: false }" :clone="clone" :move="onMove" @start="storeDragStart" @end="storeDragEnd" class="dragarea">
+        <div class="operate">
+          <div>
+            <div class="icon"><i class="el-icon-edit" /></div>
+            <draggable v-model="tagEdit" v-bind="dragOptions" @add="editTag" element="div" :group="{name: 'tagStoreEdit', put: ['tagStore']}" class="drag" />
+          </div>
+          <div>
+            <div @click="tagStoreAdd" class="icon"><i class="el-icon-circle-plus-outline" /></div>
+          </div>
+          <div>
+            <div class="icon"><i class="el-icon-delete" /></div>
+            <draggable v-model="tagDeleted" v-bind="dragOptions" element="div" :group="{name: 'tagStoreDelete', put: ['tagStore']}" class="drag" />
+          </div>
+        </div>
+        <draggable v-model="urlTag" v-bind="dragOptions" element="div" :group="{ name: 'tagStore', pull: 'clone', put: false }" :clone="clone" :move="onMove" @start="storeDragStart" @end="storeDragEnd" class="dragarea">
           <transition v-for="tag in urlTag" :key="tag.id" name="fade">
-            <div class="tag-item" @dragstart="ondragstart(tag)">
+            <div class="tag-item">
               <el-tag class="item"> {{ tag.title }} </el-tag>
             </div>
           </transition>
@@ -30,6 +47,15 @@
       <el-button @click="isTag = false">取 消</el-button>
       <el-button type="primary" @click="isTag = false">确 定</el-button>
     </div>
+    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="30%" append-to-body :before-close="handleClose">
+      <el-input placeholder="请输入内容" v-model="newTag.title">
+        <template slot="prepend">标签名称</template>
+      </el-input>
+      <span slot="footer" class="dialog-footer">
+      <el-button @click="handleClose">取 消</el-button>
+      <el-button type="primary" @click="confirmNewTag">确 定</el-button>
+      </span>
+    </el-dialog>
   </el-dialog>
 </template>
 
@@ -43,8 +69,16 @@ export default {
   data() {
     return {
       search: '',
+      tagSelectedDeleted: [],
       tagIdSelected: ['T15860802459600'],
-      cloneTag: ''
+      cloneTag: '',
+      tagEdit: [],
+      tagAdd: [],
+      tagDeleted: [],
+      dialogTitle: '',
+      dialogVisible: false,
+      editTagIndex: -1,
+      newTag: {id: '', title: ''}
     }
   },
   computed: {
@@ -122,18 +156,51 @@ export default {
     },
     storeDragStart() {
     },
-    ondragstart(tag) {
-      this.cloneTag = tag
-    },
     storeDragEnd() {
     },
-    clone() {
+    clone(e) {
       if(this.tagIdSelected.length === 0) {
-        return { ...this.cloneTag }
+        return { ...e }
       } else if(this.tagIdSelected.every(id => { return id != this.cloneTag.id })) {
-        console.log(this.cloneTag)
-        return { ...this.cloneTag }
+        // console.log(this.cloneTag)
+        return { ...e }
       }
+    },
+    tagStoreAdd() {
+      let base = (new Date()).getTime()
+      let tagId = 'T' + base
+      while(this.urlTag.some(tag => { return tag.id === tagId})) {
+        base += 1
+        tagId = 'T' + base
+      }
+      this.newTag.id = tagId
+      this.newTag.title = ''
+      this.dialogTitle = '新增'
+      this.dialogVisible = true
+    },
+    confirmNewTag() {
+      console.log(this.newTag)
+      this.dialogVisible = false
+      if (this.dialogTitle === '新增') {
+        this.urlTag.push({...this.newTag})
+      } else {
+        this.urlTag[this.editTagIndex] = {...this.newTag}
+      }
+      this.resetnewTag()
+    },
+    handleClose() {
+      this.dialogVisible = false
+      this.resetnewTag()
+    },
+    resetnewTag() {
+      this.newTag.id = ''
+      this.newTag.title = ''
+    },
+    editTag(e) {
+      this.editTagIndex = e.oldIndex
+      this.newTag = { ...this.urlTag[e.oldIndex] }
+      this.dialogTitle = '修改'
+      this.dialogVisible = true
     }
   }
 }
@@ -141,6 +208,7 @@ export default {
 <style lang="scss" scoped>
 $searchHeight: 50px;
 $tagSelectedHeight: 100px;
+$operateWidth: 60px;
 $stars: (
   (background-color: #409EFF, border-color: #409EFF, color: #fff),
   (background-color: #67c23a, border-color: #67c23a, color: #fff),
@@ -171,10 +239,53 @@ $stars: (
   width: 100%;
   height: $tagSelectedHeight;
   border: solid 1px red;
-  overflow: auto;
-  .dragarea {
-    width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-content: flex-start;
+  .delete {
+    width: 60px;
     height: 100%;
+    border: solid 1px red;
+    .icon {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      left: 0px;
+      top: 0px;
+      z-index: 99;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      align-content: space-around;
+      i {
+        font-weight: 400;
+        font-size: 30px;
+        color: #409EFF;
+      }
+      &:hover {
+        i {
+          font-weight: 400;
+          font-size: 30px;
+          color: red;
+        }
+      }
+    }
+    .drag {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      left: 0px;
+      top: -100%;
+      z-index: 98;
+    }
+  }
+  .dragarea {
+    width: calc(100% - 60px);
+    height: 100%;
+    overflow: auto;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -183,7 +294,7 @@ $stars: (
     .tag-item {
       margin: 2px 4px;
       height: 32px;
-      // background-color:rgba(255,255,255,0);
+      cursor: pointer;
     }
     @for $i from 1 through length($stars) {
       $item: nth($stars, $i);
@@ -205,11 +316,63 @@ $stars: (
 .tag-store {
   width: 100%;
   height: calc(100% - #{$searchHeight} - #{$tagSelectedHeight} - 10px);
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-content: flex-start;
   border: solid 1px red;
-  overflow: auto;
-  .dragarea {
-    width: 100%;
+  .operate {
+    width: $operateWidth;
     height: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-content: flex-start;
+    div {
+      width: 100%;
+      height: 33.33%;
+      border: solid 1px red;
+      .icon {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        left: 0px;
+        top: 0px;
+        z-index: 99;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        align-content: space-around;
+        i {
+          font-weight: 400;
+          font-size: 30px;
+          color: #409EFF;
+        }
+        &:hover {
+          i {
+            font-weight: 400;
+            font-size: 30px;
+            color: red;
+          }
+        }
+      }
+      .drag {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        left: 0px;
+        top: -100%;
+        z-index: 98;
+      }
+    }
+  }
+  .dragarea {
+    width: calc(100% - #{$operateWidth});
+    height: 100%;
+    overflow: auto;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -218,7 +381,7 @@ $stars: (
     .tag-item {
       margin: 2px 4px;
       height: 32px;
-      // background-color:rgba(255,255,255,0);
+      cursor: pointer;
     }
     @for $i from 1 through length($stars) {
       $item: nth($stars, $i);
