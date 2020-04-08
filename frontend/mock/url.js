@@ -13,7 +13,7 @@ export default [
       // let date = new Date()
       let base = 1586080245960
       for(var i =0; i< 20; i++) {
-        tags.push({id: 'T'+base+i, title: Random.cword(2,4)})
+        tags.push({id: 'T'+base+i, title: Random.cword(2,4), color: '#409EFF'})
       }
       return {
         code: 20000,
