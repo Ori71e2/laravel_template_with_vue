@@ -6,11 +6,7 @@ const state = {
   history: [],
   index: -1,
   edit: false,
-  drag: {
-    page: false,
-    group: false,
-    box: false
-  },
+  drag: false,
   tagPopover: false,
   position: 0,
   scroll: false
@@ -18,7 +14,8 @@ const state = {
 // history index 与list一起初始化及变更， index 指向当前历史
 const mutations = {
   SET_LIST: (state, list) => {
-    state.list =  JSON.parse(JSON.stringify(list))
+    // state.list =  JSON.parse(JSON.stringify(list))
+    state.list =  list
     state.index = state.index + 1
     state.history.splice(state.index, state.history.length-state.index, JSON.stringify(list))
   },
@@ -39,7 +36,7 @@ const mutations = {
     }
   },
   SET_DRAG: (state, val) => {
-    state.drag = JSON.parse(JSON.stringify(val))
+    state.drag = val
   },
   SET_EDIT: (state, val) => {
     state.edit = val

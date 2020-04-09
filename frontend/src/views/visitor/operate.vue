@@ -42,7 +42,6 @@ export default {
       history: [],
       activeClass: 'active',
       inactiveClass: 'inactive',
-      isDrag: false,
       oldUrlList: [],
       timer: null,
       disabled: true
@@ -62,7 +61,7 @@ export default {
         return this.$store.state.url.history.length
       }
     },
-    drag: {
+    isDrag: {
       get() {
         return this.$store.state.url.drag
       },
@@ -139,11 +138,7 @@ export default {
       }
     },
     setDrag() {
-      Object.keys(this.drag).forEach((key) => {
-        this.drag[key] = !this.drag[key]
-      })
       this.isDrag = !this.isDrag
-      this.save()
     },
     setEdit() {
       this.isEdit =  !this.isEdit

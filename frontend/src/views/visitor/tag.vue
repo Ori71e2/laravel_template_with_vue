@@ -6,7 +6,7 @@
           <div class="icon"><i class="el-icon-delete" /></div>
           <draggable v-model="tagSelectedDeleted" v-bind="dragOptions" element="div" :group="{name: 'tag', put: ['urlTagSelected']}" class="drag" />
         </div>
-        <draggable v-model="urlTagSelected" v-bind="dragOptions" element="div" :group="{name: 'urlTagSelected', put: ['tagStore']}" :move="onMove" @start="dragStart" @end="dragEnd" class="dragarea">
+        <draggable v-model="urlTagSelected" v-bind="dragOptions" element="div" :group="{name: 'urlTagSelected', put: ['tagStore']}" :move="onMove" class="dragarea">
           <transition v-for="tag in urlTagSelected" :key="tag.id" name="fade">
             <div class="tag-item">
               <el-tag class="item" :style="{backgroundColor: tag.color, borderColor: tag.color}"> {{ tag.title }}</el-tag>
@@ -34,7 +34,7 @@
           </div>
         </div>
         <!-- search 功能，选择结果只能编辑无法进行排序 -->
-        <draggable v-if="search" v-model="urlTagSearch" v-bind="dragOptions" element="div" :group="{ name: 'tagStore', pull: 'clone', put: ['tagStore'] }" :clone="clone" :move="onMove" @start="storeDragStart" @end="storeDragEnd" class="dragarea">
+        <draggable v-if="search" v-model="urlTagSearch" v-bind="dragOptions" element="div" :group="{ name: 'tagStore', pull: 'clone', put: ['tagStore'] }" :clone="clone" :move="onMove" class="dragarea">
           <transition v-for="tag in urlTagSearch" :key="tag.id" name="fade">
             <div class="tag-item">
               <el-tag class="item" :style="{backgroundColor: tag.color, borderColor:tag.color}"> {{ tag.title }}</el-tag>
@@ -42,7 +42,7 @@
           </transition>
         </draggable>
         <!-- 原始数据，可进行编辑与排序 -->
-        <draggable v-else v-model="urlTag" v-bind="dragOptions" element="div" :group="{ name: 'tagStore', pull: 'clone', put: ['tagStore'] }" :clone="clone" :move="onMove" @start="storeDragStart" @end="storeDragEnd" class="dragarea">
+        <draggable v-else v-model="urlTag" v-bind="dragOptions" element="div" :group="{ name: 'tagStore', pull: 'clone', put: ['tagStore'] }" :clone="clone" :move="onMove" class="dragarea">
           <transition v-for="tag in urlTag" :key="tag.id" name="fade">
             <div class="tag-item">
               <el-tag class="item" :style="{backgroundColor: tag.color, borderColor:tag.color}"> {{ tag.title }}</el-tag>
@@ -109,7 +109,7 @@ export default {
   computed: {
     urlTag: {
       get() {
-        const urlTagTrigger = this.urlTagTrigger
+        // const urlTagTrigger = this.urlTagTrigger
         return this.$store.state.url.tag
       },
       set(val) {
@@ -185,14 +185,6 @@ export default {
         (!relatedElement || !relatedElement.fixed) && !draggedElement.fixed
       )
     },
-    dragStart() {
-    },
-    dragEnd() {
-    },
-    storeDragStart() {
-    },
-    storeDragEnd() {
-    },
     clone(e) {
       this.cloneTag = { ...e }
       if(this.tagIdSelected.length === 0) {
@@ -267,7 +259,7 @@ export default {
         }
       }
       this.urlTag = urlTag
-      this.urlTagTrigger += 1
+      // this.urlTagTrigger += 1
     },
     handleClose() {
       this.dialogVisible = false

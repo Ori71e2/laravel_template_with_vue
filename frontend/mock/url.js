@@ -12,7 +12,7 @@ export default [
       // tags.push({id: 'T20200401', tag: '编程'})
       // let date = new Date()
       let base = 1586080245960
-      for(var i =0; i< 20; i++) {
+      for(let i =0; i< 20; i++) {
         tags.push({id: 'T'+base+i, title: Random.cword(2,4), color: '#409EFF'})
       }
       return {
@@ -33,31 +33,31 @@ export default [
       //     message: 'Account and password are incorrect.'
       //   }
       // }
-
-      var urlList = []
-      var images = [1,2,3].map(x=>Random.image('200x100', Random.color(), Random.word(2,6)));
-      for (var k = 0; k<6; k++) {
-        var page = []
-        for(var m = 0; m < 5; m++) {
-          var group = []
-          for (var i = 0; i < 20; i++) {
-            var content = Random.cparagraph(0,10);
+      let base = 1586080245960
+      let urlList = []
+      let images = [1,2,3].map(x=>Random.image('200x100', Random.color(), Random.word(2,6)));
+      for (let k = 0; k<6; k++) {
+        let page = []
+        for(let m = 0; m < 5; m++) {
+          let group = []
+          for (let i = 0; i < 20; i++) {
+            let content = Random.cparagraph(0,10);
             group.push({
-                id: i, 
+                id: 'U' + base + i, 
                 title: Random.cword(2,5),
                 url: Random.domain(),
-                // tag: Random.cword(2,6),
+                tag: [],
                 // images: images.slice(0,Random.integer(1,3))
             })
           }
           page.push({
-            id: m,
+            id: 'G' + base + m,
             title: Random.cword(2,4),
             group: group
           })
         }
         urlList.push({
-          id: k,
+          id: 'P' + base + k,
           title: Random.cword(4,5),
           page: page
         })

@@ -1,7 +1,7 @@
 
 <template>
   <div class="url-page-nav">
-    <draggable v-model="urlList" v-bind="dragOptions" :move="onMove" element="div" @start="dragStart" @end="dragEnd">
+    <draggable v-model="urlList" v-bind="dragOptions" :move="onMove" element="div" :group="{ name: 'urlPage', pull: 'clone', put: ['urlPage'] }">
       <transition v-for="(page, pageIndex) in urlList" :key="pageIndex" name="fade">
         <div class="url-page-title">
           <a v-if="!isEdit">
@@ -51,7 +51,7 @@ export default {
         this.$store.dispatch('url/setList', val)
       }
     },
-    drag: {
+    isDrag: {
       get() {
         return this.$store.state.url.drag
       },
@@ -87,8 +87,7 @@ export default {
       return {
         animation: 0,
         group: 'description',
-        // disabled: true,
-        disabled: !this.drag.page,
+        disabled: !this.isDrag,
         ghostClass: 'ghost'
       }
     }
@@ -102,18 +101,6 @@ export default {
       return (
         (!relatedElement || !relatedElement.fixed) && !draggedElement.fixed
       )
-    },
-    dragStart() {
-      Object.keys(this.drag).forEach((key) => {
-        if (key !== 'page') {
-          this.drag[key] = false
-        }
-      })
-    },
-    dragEnd() {
-      Object.keys(this.drag).forEach((key) => {
-        this.drag[key] = true
-      })
     },
     handleScroll(pageIndex) {
       this.pageIndex = pageIndex

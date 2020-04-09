@@ -3,13 +3,13 @@
   <div :style="urlListStyle" class="url-list">
     <div v-for="(urlPage, pageIndex) in urlList" :key="pageIndex" :ref="'anchor' + pageIndex">
       <!-- <div :ref="'anchor' + pageIndex" style="display: none;"></div> -->
-      <draggable v-model="urlPage.page" v-bind="groupDragOptions" :move="onMove" element="div" @start="groupStart" @end="groupEnd">
+      <draggable v-model="urlPage.page" v-bind="groupDragOptions" :move="onMove" element="div" :group="{ name: 'urlGroup', pull: 'clone', put: ['urlGroup'] }" @start="groupStart" @end="groupEnd">
         <div v-for="(urlGroup, groupIndex) in urlPage.page" :key="groupIndex" :style="urlGroupStyle" class="url-group">
           <div :style="urlGroupTitleStyle" class="url-group-title">
             <span v-if="!isEdit">{{ urlGroup.title }}</span>
             <a v-else @click="handleEdit('group', pageIndex, groupIndex, -1)">{{ urlGroup.title }}</a>
           </div>
-          <draggable v-model="urlGroup.group" v-bind="boxDragOptions" :move="onMove" element="div" :class="pageClass" @start="boxStart" @end="boxEnd">
+          <draggable v-model="urlGroup.group" v-bind="boxDragOptions" :move="onMove" element="div" :class="pageClass" :group="{ name: 'urlItem', pull: 'clone', put: ['urlItem'] }" @start="boxStart" @end="boxEnd">
             <transition v-for="(url, urlIndex) in urlGroup.group" :key="urlIndex" name="fade">
               <div :style="boxStyle" class="url-box">
                 <a v-if="!isEdit" href="url.url" target="_blank">
@@ -56,7 +56,6 @@ export default {
       windowWidth: 1000,
       urlPageOffsetLeft: 0,
       unitnum: 3,
-      // colnum: 4,
       urlPageBorder: 1,
       boxWidth: 100,
       boxPaddingLR: 1,
@@ -88,7 +87,7 @@ export default {
         this.$store.dispatch('url/setList', val)
       }
     },
-    drag: {
+    isDrag: {
       get() {
         return this.$store.state.url.drag
       },
@@ -117,7 +116,7 @@ export default {
         return 0
       }
     },
-    drag: {
+    isDrag: {
       get() {
         return this.$store.state.url.drag
       },
@@ -133,7 +132,7 @@ export default {
         animation: 0,
         group: 'description',
         // disabled: true,
-        disabled: !this.drag.box,
+        disabled: !this.isDrag,
         ghostClass: 'ghost'
       }
     },
@@ -141,7 +140,7 @@ export default {
       return {
         animation: 0,
         group: 'description',
-        disabled: !this.drag.group,
+        disabled: !this.isDrag,
         ghostClass: 'ghost'
       }
     },
@@ -203,29 +202,13 @@ export default {
       )
     },
     groupStart() {
-      Object.keys(this.drag).forEach((key) => {
-        if (key !== 'group') {
-          this.drag[key] = false
-        }
-      })
     },
     groupEnd() {
-      Object.keys(this.drag).forEach((key) => {
-        this.drag[key] = true
-      })
       this.setUrlList()
     },
     boxStart() {
-      Object.keys(this.drag).forEach((key) => {
-        if (key !== 'box') {
-          this.drag[key] = false
-        }
-      })
     },
     boxEnd() {
-      Object.keys(this.drag).forEach((key) => {
-        this.drag[key] = true
-      })
       this.setUrlList()
     },
     getWindowWidth() {

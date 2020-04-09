@@ -6,6 +6,6 @@ const getters = {
   name: state => state.user.name,
   roles: state => state.user.roles,
   permission_routes: state => state.permission.routes,
-  urlList: state => JSON.parse(JSON.stringify(state.url.list))
+  urlList: state => state.url.list
 }
 export default getters
