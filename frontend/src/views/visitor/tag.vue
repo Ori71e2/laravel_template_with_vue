@@ -1,14 +1,13 @@
 <template>
-  <el-dialog title="标签列表" :visible.sync="isTag" width="70%" model-append-to-body class="dialog-custom">
+  <el-dialog title="标签列表" :visible.sync="urlTagPopover" width="70%" model-append-to-body class="dialog-custom">
     <div class="main">
-      {{ tagSelected }}
       <div class="tag-selected">
         <div class="delete">
           <div class="icon"><i class="el-icon-delete" /></div>
-          <draggable v-model="tagSelectedDeleted" v-bind="dragOptions" element="div" :group="{name: 'tag', put: ['tagSelected']}" class="drag" />
+          <draggable v-model="tagSelectedDeleted" v-bind="dragOptions" element="div" :group="{name: 'tag', put: ['urlTagSelected']}" class="drag" />
         </div>
-        <draggable v-model="tagSelected" v-bind="dragOptions" element="div" :group="{name: 'tagSelected', put: ['tagStore']}" :move="onMove" @start="dragStart" @end="dragEnd" class="dragarea">
-          <transition v-for="tag in tagSelected" :key="tag.id" name="fade">
+        <draggable v-model="urlTagSelected" v-bind="dragOptions" element="div" :group="{name: 'urlTagSelected', put: ['tagStore']}" :move="onMove" @start="dragStart" @end="dragEnd" class="dragarea">
+          <transition v-for="tag in urlTagSelected" :key="tag.id" name="fade">
             <div class="tag-item">
               <el-tag class="item" :style="{backgroundColor: tag.color, borderColor: tag.color}"> {{ tag.title }}</el-tag>
             </div>
@@ -34,8 +33,17 @@
             <draggable v-model="tagDeleted" v-bind="dragOptions" element="div" :group="{name: 'tagStoreDelete', put: ['tagStore']}" class="drag" />
           </div>
         </div>
-        <draggable v-model="tagSearch" v-bind="dragOptions" element="div" :group="{ name: 'tagStore', pull: 'clone', put: false }" :clone="clone" :move="onMove" @start="storeDragStart" @end="storeDragEnd" class="dragarea">
-          <transition v-for="tag in tagSearch" :key="tag.id" name="fade">
+        <!-- search 功能，选择结果只能编辑无法进行排序 -->
+        <draggable v-if="search" v-model="urlTagSearch" v-bind="dragOptions" element="div" :group="{ name: 'tagStore', pull: 'clone', put: ['tagStore'] }" :clone="clone" :move="onMove" @start="storeDragStart" @end="storeDragEnd" class="dragarea">
+          <transition v-for="tag in urlTagSearch" :key="tag.id" name="fade">
+            <div class="tag-item">
+              <el-tag class="item" :style="{backgroundColor: tag.color, borderColor:tag.color}"> {{ tag.title }}</el-tag>
+            </div>
+          </transition>
+        </draggable>
+        <!-- 原始数据，可进行编辑与排序 -->
+        <draggable v-else v-model="urlTag" v-bind="dragOptions" element="div" :group="{ name: 'tagStore', pull: 'clone', put: ['tagStore'] }" :clone="clone" :move="onMove" @start="storeDragStart" @end="storeDragEnd" class="dragarea">
+          <transition v-for="tag in urlTag" :key="tag.id" name="fade">
             <div class="tag-item">
               <el-tag class="item" :style="{backgroundColor: tag.color, borderColor:tag.color}"> {{ tag.title }}</el-tag>
             </div>
@@ -44,20 +52,21 @@
       </div>
     </div>
     <div slot="footer" class="dialog-footer">
-      <el-button @click="isTag = false">取 消</el-button>
-      <el-button type="primary" @click="isTag = false">确 定</el-button>
+      <el-button @click="urlTagPopover = false">取 消</el-button>
+      <el-button type="primary" @click="urlTagPopover = false">确 定</el-button>
     </div>
+    <!-- 嵌套dialog -->
     <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="30%" append-to-body :before-close="handleClose">
       <el-input placeholder="请输入内容" v-model="newTag.title">
         <template slot="prepend">标签名称</template>
       </el-input>
-      <div v-show="!isValiadte" style="color: red; margin-left: 50%;">存在重复标签</div>
+      <div v-show="!newTagValidate" style="color: red; margin-left: 50%;">存在重复标签</div>
       <el-input placeholder="请输入内容" v-model="newTag.color">
         <el-color-picker v-model="newTag.color" :predefine="predefineColors" size="small" slot="prepend" style="margin-top: 4px;" />
       </el-input>
       <span slot="footer" class="dialog-footer">
       <el-button @click="handleClose">取 消</el-button>
-      <el-button :disabled="!isValiadte" type="primary" @click="confirmNewTag">确 定</el-button>
+      <el-button :disabled="!newTagValidate" type="primary" @click="confirmNewTag">确 定</el-button>
       </span>
     </el-dialog>
   </el-dialog>
@@ -73,15 +82,19 @@ export default {
   data() {
     return {
       search: '',
-      tagSelectedDeleted: [],
       tagIdSelected: ['T15860802459600'],
+      // 用来存放Tag的，数据无实际意义
+      tagSelectedDeleted: [],
       tagEdit: [],
-      tagAdd: [],
       tagDeleted: [],
+      // dialog变量
       dialogTitle: '',
       dialogVisible: false,
+      // 存放克隆的tag信息，根据目的区域不同，有不同用途
       cloneTag: {},
+      // 新增与变更复用tag
       newTag: {id: '', title: '', color: '#409EFF'},
+      // 颜色选择器预选颜色
       predefineColors: [
         '#409EFF',
         '#67c23a',
@@ -91,40 +104,43 @@ export default {
         '#8040FF',
         '#FC40FF'
       ],
-      trigger: 0
     }
   },
   computed: {
     urlTag: {
       get() {
-        return JSON.parse(JSON.stringify(this.$store.state.url.tag))
+        const urlTagTrigger = this.urlTagTrigger
+        return this.$store.state.url.tag
       },
       set(val) {
         this.$store.dispatch('url/setTag', val)
       }
     },
-    tagSearch: {
+    urlTagTrigger: {
       get() {
-        const trigger = this.trigger
-        const urlTag = JSON.parse(JSON.stringify(this.urlTag))
+        return this.$store.state.url.urlTagTrigger
+      },
+      set(val) {
+        this.$store.state.url.urlTagTrigger = val
+      }
+    },
+    urlTagSearch: {
+      get() {
+        const urlTag = this.urlTag
         return urlTag.filter(tag => { return this.search === '' || tag.title.toLowerCase().includes(this.search.toLowerCase()) })
       },
       set(val) {
+        this.$message({message: '搜索结果不可拖拽排序',center: true, duration: '1000'})
       }
     },
-    tagSelected: {
+    urlTagSelected: {
       get() {
-        const trigger = this.trigger
         if (this.tagIdSelected.length === 0 || this.urlTag.length ===0) {
           return []
         } else {
           const tag = this.tagIdSelected.map((id, index) => {
             const filterTags = this.urlTag.filter(tag => { return tag.id === id})
-            if (filterTags.length > 0) {
-              return filterTags[0]
-            } else {
-              return
-            }
+            return filterTags.length > 0 ? filterTags[0] : []
           })
           return tag
         }
@@ -135,7 +151,7 @@ export default {
         }
       }
     },
-    isTag: {
+    urlTagPopover: {
       get() {
         return this.$store.state.url.tagPopover
       },
@@ -147,13 +163,12 @@ export default {
       return {
         animation: 0,
         group: 'description',
-        // disabled: true,
         disabled: false,
         ghostClass: 'ghost'
       }
     },
-    isValiadte() {
-      return this.verify()
+    newTagValidate() {
+      return this.validate()
     }
   },
   created() {
@@ -179,7 +194,6 @@ export default {
     storeDragEnd() {
     },
     clone(e) {
-      console.dir(this.tagSelected)
       this.cloneTag = { ...e }
       if(this.tagIdSelected.length === 0) {
         return { ...e }
@@ -201,11 +215,12 @@ export default {
       this.dialogVisible = true
     },
     tagStoreEdit(e) {
+      // 获取要修改的tag信息
       this.newTag = { ...this.urlTag.filter(tag => { return tag.id === this.cloneTag.id})[0] }
       this.dialogTitle = '修改'
       this.dialogVisible = true
     },
-    verify() {
+    validate() {
       if (this.urlTag.length === 0) {
         return true
       } else {
@@ -228,32 +243,31 @@ export default {
     },
     confirmNewTag() {
       this.dialogVisible = false
+      let urlTag = this.urlTag
       if (this.urlTag.length === 0) {
-        this.trigger += 1
-        this.urlTag.push({...this.newTag})
+        urlTag.push({...this.newTag})
       } else {
-        const idEqualIndex = this.urlTag.findIndex(tag => { return  tag.id === this.newTag.id })
-        const titleEqualIndex = this.urlTag.findIndex(tag => { return  tag.title === this.newTag.title })
+        const idEqualIndex = urlTag.findIndex(tag => { return  tag.id === this.newTag.id })
+        const titleEqualIndex = urlTag.findIndex(tag => { return  tag.title === this.newTag.title })
         // 未找到id表明是新增
         if (idEqualIndex === -1) {
           if (titleEqualIndex === -1) {
-            this.trigger += 1
-            this.urlTag.push({...this.newTag})
+            urlTag.push({...this.newTag})
           }
         // 找到id表明为修改
         } else {
           // 未进行修改
           if (idEqualIndex === titleEqualIndex){
-            this.trigger += 1
-            this.urlTag.splice(idEqualIndex, 1, {...this.newTag})
+            urlTag.splice(idEqualIndex, 1, {...this.newTag})
           }
           // 修改值未重复
           if (titleEqualIndex === -1){
-            this.trigger += 1
-            this.urlTag.splice(idEqualIndex, 1, {...this.newTag})
+            urlTag.splice(idEqualIndex, 1, {...this.newTag})
           }
         }
       }
+      this.urlTag = urlTag
+      this.urlTagTrigger += 1
     },
     handleClose() {
       this.dialogVisible = false

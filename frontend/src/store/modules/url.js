@@ -1,6 +1,8 @@
 const state = {
   list: [],
   tag: [],
+  listTrigger: 0,
+  tagTrigger: 0,
   history: [],
   index: -1,
   edit: false,
@@ -49,10 +51,14 @@ const mutations = {
     state.scroll = val
   },
   SET_TAG: (state, val) => {
-    state.tag = JSON.parse(JSON.stringify(val))
+    // state.tag = JSON.parse(JSON.stringify(val))
+    state.tag = val
   },
   SET_TAG_POPOVER: (state, val) => {
     state.tagPopover = val
+  },
+  SET_TAG_TRIGGER: (state, val) => {
+    state.tagTrigger += val
   }
  }
 
@@ -101,6 +107,11 @@ const actions = {
     commit
   }, val) {
     commit('SET_TAG_POPOVER', val)
+  },
+  setTagTrigger({
+    commit
+  }, val) {
+    commit('SET_TAG_TRIGGER', val)
   }
  }
 
