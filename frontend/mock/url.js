@@ -36,11 +36,11 @@ export default [
       let base = 1586080245960
       let urlList = []
       let images = [1,2,3].map(x=>Random.image('200x100', Random.color(), Random.word(2,6)));
-      for (let k = 0; k<6; k++) {
+      for (let k = 0; k<2; k++) {
         let page = []
-        for(let m = 0; m < 5; m++) {
+        for(let m = 0; m < 2; m++) {
           let group = []
-          for (let i = 0; i < 20; i++) {
+          for (let i = 0; i < 10; i++) {
             let content = Random.cparagraph(0,10);
             group.push({
                 id: 'U' + base + i, 

@@ -1,17 +1,18 @@
 
 <template>
   <div :style="urlListStyle" class="url-list">
+    {{ this.$store.getters.urlList }}
     <div v-for="(urlPage, pageIndex) in urlList" :key="pageIndex" :ref="'anchor' + pageIndex">
       <!-- <div :ref="'anchor' + pageIndex" style="display: none;"></div> -->
-      <draggable v-model="urlPage.page" v-bind="groupDragOptions" :move="onMove" element="div" :group="{ name: 'urlGroup', pull: 'clone', put: ['urlGroup'] }" @start="groupStart" @end="groupEnd">
+      <draggable v-model="urlPage.page" v-bind="urlGroupDragOptions" :move="onMove" element="div" :group="{ name: 'urlGroup', pull: true, put: ['urlGroup'] }" @end="urlGroupDragEnd">
         <div v-for="(urlGroup, groupIndex) in urlPage.page" :key="groupIndex" :style="urlGroupStyle" class="url-group">
           <div :style="urlGroupTitleStyle" class="url-group-title">
             <span v-if="!isEdit">{{ urlGroup.title }}</span>
             <a v-else @click="handleEdit('group', pageIndex, groupIndex, -1)">{{ urlGroup.title }}</a>
           </div>
-          <draggable v-model="urlGroup.group" v-bind="boxDragOptions" :move="onMove" element="div" :class="pageClass" :group="{ name: 'urlItem', pull: 'clone', put: ['urlItem'] }" @start="boxStart" @end="boxEnd">
+          <draggable v-model="urlGroup.group" v-bind="urlItemDragOptions" :move="onMove" element="div" :class="urlGroupClass" :group="{ name: 'urlItem', pull: true, put: ['urlItem'] }" @end="urlItemDragEnd">
             <transition v-for="(url, urlIndex) in urlGroup.group" :key="urlIndex" name="fade">
-              <div :style="boxStyle" class="url-box">
+              <div :style="urlItemStyle" class="url-box">
                 <a v-if="!isEdit" href="url.url" target="_blank">
                   <span>{{ url.title }}</span>
                 </a>
@@ -20,7 +21,7 @@
                 </a>
               </div>
             </transition>
-            <div :style="boxStyle" class="url-box url-box-add">
+            <div :style="urlItemStyle" class="url-box url-box-add">
               <a href="" target="_blank">
                 <span>Add</span>
               </a>
@@ -31,10 +32,10 @@
     </div>
     <el-dialog title="修改" :visible.sync="dialogVisible" width="30%" :before-close="handleClose" :append-to-body="true" style="z-index: 199!important">
       <span>这是一段信息</span>
-      <el-input v-model="item.title" placeholder="请输入内容">
+      <el-input v-model="editItemOnType.title" placeholder="请输入内容">
         <template slot="prepend">名称</template>
       </el-input>
-      <el-input v-if="itemType === 'url'" v-model="item.url" placeholder="请输入内容">
+      <el-input v-if="itemType === 'url'" v-model="editItemOnType.url" placeholder="请输入内容">
         <template slot="prepend">网址</template>
       </el-input>
       <span slot="footer" class="dialog-footer">
@@ -53,17 +54,17 @@ export default {
   },
   data() {
     return {
-      windowWidth: 1000,
+      initWindowWidth: 1000,
       urlPageOffsetLeft: 0,
-      unitnum: 3,
       urlPageBorder: 1,
-      boxWidth: 100,
-      boxPaddingLR: 1,
-      boxBorder: 1,
-      boxMarginLR: 1,
-      UCBoxMarginR: 50,
+      urlItemGatherNum: 3,
+      urlItemDivWidth: 100,
+      urlItemDivPaddingLR: 1,
+      urlItemDivBorder: 1,
+      urlItemDivMarginLR: 1,
+      urlItemColumnGutter: 50,
       dialogVisible: false,
-      item: {
+      editItemOnType: {
         type: '',
         pageIndex: -1,
         groupIndex: -1,
@@ -73,18 +74,22 @@ export default {
       }
     }
   },
-  watch: {
-    scroll: function(newVal, oldVal) {
-      window.scrollTo(0, this.distance)
-    }
-  },
   computed: {
     urlList: {
       get() {
+        const urlTagTrigger = this.urlTagTrigger
         return this.$store.getters.urlList
       },
       set(val) {
         this.$store.dispatch('url/setList', val)
+      }
+    },
+    urlTagTrigger: {
+      get() {
+        return this.$store.state.url.urlTagTrigger
+      },
+      set(val) {
+        this.$store.state.url.urlTagTrigger = val
       }
     },
     isDrag: {
@@ -125,9 +130,9 @@ export default {
       }
     },
     itemType() {
-      return this.item.type
+      return this.editItemOnType.type
     },
-    boxDragOptions() {
+    urlItemDragOptions() {
       return {
         animation: 0,
         group: 'description',
@@ -136,7 +141,7 @@ export default {
         ghostClass: 'ghost'
       }
     },
-    groupDragOptions() {
+    urlGroupDragOptions() {
       return {
         animation: 0,
         group: 'description',
@@ -144,7 +149,7 @@ export default {
         ghostClass: 'ghost'
       }
     },
-    pageClass: function() {
+    urlGroupClass: function() {
       const pageItem = []
       for (let i = 1; i < 11; i++) {
         const item = []
@@ -154,31 +159,36 @@ export default {
         }
         pageItem.push(item)
       }
-      return pageItem[this.unitnum - 1][this.colnum - 1]
+      return pageItem[this.urlItemGatherNum - 1][this.itemColumnNum - 1]
     },
     urlGroupTitleStyle: function() {
-      return { width: this.boxWidth + 'px' }
+      return { width: this.urlItemDivWidth + 'px' }
     },
     urlGroupStyle: function() {
       return { borderWidth: this.urlPageBorder + 'px' }
     },
-    colnum() {
-      const boxBase1 = (this.boxWidth + (this.boxMarginLR + this.boxBorder + this.boxPaddingLR) * 2)
-      const boxBase2 = (this.boxWidth + (this.boxPaddingLR + this.boxBorder) * 2 + this.UCBoxMarginR + this.boxMarginLR)
+    itemColumnNum() {
+      const boxBase1 = (this.urlItemDivWidth + (this.urlItemDivMarginLR + this.urlItemDivBorder + this.urlItemDivPaddingLR) * 2)
+      const boxBase2 = (this.urlItemDivWidth + (this.urlItemDivPaddingLR + this.urlItemDivBorder) * 2 + this.urlItemColumnGutter + this.urlItemDivMarginLR)
       const boxToUrlPage = this.urlPageBorder * 2
       const base = 240
-      const num = Math.floor((this.windowWidth - boxBase1 + boxBase2 - boxToUrlPage - base) / ((this.unitnum - 1) * boxBase1 + boxBase2))
+      const num = Math.floor((this.initWindowWidth - boxBase1 + boxBase2 - boxToUrlPage - base) / ((this.urlItemGatherNum - 1) * boxBase1 + boxBase2))
       return num
     },
     urlListStyle: function() {
-      const boxBase1 = (this.boxWidth + (this.boxMarginLR + this.boxBorder + this.boxPaddingLR) * 2)
-      const boxBase2 = (this.boxWidth + (this.boxPaddingLR + this.boxBorder) * 2 + this.UCBoxMarginR + this.boxMarginLR)
+      const boxBase1 = (this.urlItemDivWidth + (this.urlItemDivMarginLR + this.urlItemDivBorder + this.urlItemDivPaddingLR) * 2)
+      const boxBase2 = (this.urlItemDivWidth + (this.urlItemDivPaddingLR + this.urlItemDivBorder) * 2 + this.urlItemColumnGutter + this.urlItemDivMarginLR)
       const boxToUrlPage = this.urlPageBorder * 2
-      const width = ((this.unitnum - 1) * this.colnum + 1) * boxBase1 + (this.colnum - 1) * boxBase2 + boxToUrlPage
+      const width = ((this.urlItemGatherNum - 1) * this.itemColumnNum + 1) * boxBase1 + (this.itemColumnNum - 1) * boxBase2 + boxToUrlPage
       return { width: width + 'px' }
     },
-    boxStyle: function() {
-      return { width: this.boxWidth + 'px', borderWidth: this.boxBorder + 'px' }
+    urlItemStyle: function() {
+      return { width: this.urlItemDivWidth + 'px', borderWidth: this.urlItemDivBorder + 'px' }
+    }
+  },
+  watch: {
+    scroll: function(newVal, oldVal) {
+      window.scrollTo(0, this.distance)
     }
   },
   created() {
@@ -192,7 +202,7 @@ export default {
   },
   methods: {
     handleWindowResize() {
-      this.windowWidth = document.body.clientWidth
+      this.initWindowWidth = document.body.clientWidth
     },
     onMove({ relatedContext, draggedContext }) {
       const relatedElement = relatedContext.element
@@ -201,37 +211,34 @@ export default {
         (!relatedElement || !relatedElement.fixed) && !draggedElement.fixed
       )
     },
-    groupStart() {
+    urlGroupDragEnd() {
+      this.urlTagTrigger += 1
     },
-    groupEnd() {
-      this.setUrlList()
-    },
-    boxStart() {
-    },
-    boxEnd() {
-      this.setUrlList()
+    urlItemDragEnd() {
+      this.urlTagTrigger += 1
     },
     getWindowWidth() {
-      this.windowWidth = document.body.clientWidth
+      this.initWindowWidth = document.body.clientWidth
     },
     handleEdit(type, pageIndex, groupIndex, urlIndex) {
-      this.item.type = type
-      this.item.urlIndex = urlIndex
-      this.item.pageIndex = pageIndex
-      this.item.groupIndex = groupIndex
+      this.editItemOnType.type = type
+      this.editItemOnType.urlIndex = urlIndex
+      this.editItemOnType.pageIndex = pageIndex
+      this.editItemOnType.groupIndex = groupIndex
       this.dialogVisible = true
     },
     handleClose() {
       this.dialogVisible = false
     },
     handleConfirm() {
-      const type = this.item.type
-      const url = this.item.url
-      const title = this.item.title
-      const pageIndex = this.item.pageIndex
-      const groupIndex = this.item.groupIndex
-      const urlIndex = this.item.urlIndex
-      const page = JSON.parse(JSON.stringify(this.urlList[pageIndex]))
+      const type = this.editItemOnType.type
+      const url = this.editItemOnType.url
+      const title = this.editItemOnType.title
+      const pageIndex = this.editItemOnType.pageIndex
+      const groupIndex = this.editItemOnType.groupIndex
+      const urlIndex = this.editItemOnType.urlIndex
+      // const page = JSON.parse(JSON.stringify(this.urlList[pageIndex]))
+      const page = this.urlList[pageIndex]
       if (type === 'url') {
         page.page[groupIndex].group[urlIndex].url = url
         page.page[groupIndex].group[urlIndex].title = title
@@ -241,11 +248,11 @@ export default {
         page.title = title
       }
       this.urlList[pageIndex] = page
-      this.setUrlList()
+      this.urlTagTrigger += 1
       this.dialogVisible = false
     },
     setUrlList() {
-      this.urlList = JSON.parse(JSON.stringify(this.urlList))
+      // this.urlList = JSON.parse(JSON.stringify(this.urlList))
     }
   }
 
@@ -253,10 +260,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  $boxPaddingLR: 1px;
-  $boxBorder: 1px;
-  $boxMarginLR: 1px;
-  $UCBoxMarginR: 50px;
+  $urlItemDivPaddingLR: 1px;
+  $urlItemDivBorder: 1px;
+  $urlItemDivMarginLR: 1px;
+  $urlItemColumnGutter: 50px;
   .url-list {
     width: 100%;
     height: 100%;
@@ -271,11 +278,11 @@ export default {
     border-color: red;
     .url-group-title {
       box-sizing: content-box;
-      border: solid $boxBorder red;
+      border: solid $urlItemDivBorder red;
       border-radius: 2px;
-      margin-left: $boxMarginLR;
-      margin-right: $boxMarginLR;
-      padding: 0px $boxPaddingLR;
+      margin-left: $urlItemDivMarginLR;
+      margin-right: $urlItemDivMarginLR;
+      padding: 0px $urlItemDivPaddingLR;
       margin-bottom: 2px;
       background-color: #ffffff;
       height: 30px;
@@ -295,20 +302,20 @@ export default {
       }
     }
   }
-  @for $unitnum from 1 through 10 {
-    @for $colnum from 1 through 10 {
-      .page-item-#{$unitnum}-#{$colnum} {
+  @for $urlItemGatherNum from 1 through 10 {
+    @for $itemColumnNum from 1 through 10 {
+      .page-item-#{$urlItemGatherNum}-#{$itemColumnNum} {
         width: 100%;
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
         justify-content: flex-start;
         margin: 0px;
-        div:nth-child(#{$unitnum}n+#{$unitnum}) {
-          margin-right: $UCBoxMarginR !important;
+        div:nth-child(#{$urlItemGatherNum}n+#{$urlItemGatherNum}) {
+          margin-right: $urlItemColumnGutter !important;
         }
-        div:nth-child(#{$unitnum*$colnum}n+#{$unitnum*$colnum}) {
-          margin-right: $boxMarginLR !important;
+        div:nth-child(#{$urlItemGatherNum*$itemColumnNum}n+#{$urlItemGatherNum*$itemColumnNum}) {
+          margin-right: $urlItemDivMarginLR !important;
         }
       }
     }
@@ -317,8 +324,8 @@ export default {
     border: solid red;
     box-sizing: content-box;
     border-radius: 2px;
-    margin: 3px $boxMarginLR;
-    padding: $boxPaddingLR;
+    margin: 3px $urlItemDivMarginLR;
+    padding: $urlItemDivPaddingLR;
     background-color: #ffffff;
     height: 45px;
     display: block;

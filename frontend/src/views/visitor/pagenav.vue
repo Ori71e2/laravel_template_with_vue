@@ -116,9 +116,7 @@ export default {
     handleConfirm() {
       const title = this.item.title
       const pageIndex = this.item.pageIndex
-      const page = this.urlList[pageIndex].slice()
-      page.title = title
-      this.urlList.splice(pageIndex, 1, page)
+      this.urlList[pageIndex].title = title
       this.dialogVisible = false
     }
   }
