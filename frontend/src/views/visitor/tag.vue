@@ -65,8 +65,8 @@
         <el-color-picker v-model="newTag.color" :predefine="predefineColors" size="small" slot="prepend" style="margin-top: 4px;" />
       </el-input>
       <span slot="footer" class="dialog-footer">
-      <el-button @click="handleClose">取 消</el-button>
-      <el-button :disabled="!newTagValidate" type="primary" @click="confirmNewTag">确 定</el-button>
+      <el-button @click="handleClose">关 闭</el-button>
+      <el-button :disabled="!newTagValidate" type="primary" @click="confirmNewTag">保 存</el-button>
       </span>
     </el-dialog>
   </el-dialog>
@@ -88,6 +88,12 @@ export default {
       type: Array,
       default: () => {
         return []
+      }
+    },
+    type: {
+      type: String,
+      default: () => {
+        return ''
       }
     }
   },
@@ -115,7 +121,7 @@ export default {
         '#909399',
         '#8040FF',
         '#FC40FF'
-      ],
+      ]
     }
   },
   computed: {
@@ -279,7 +285,6 @@ export default {
         }
       }
       this.urlTag = urlTag
-      // this.urlTagTrigger += 1
     },
     handleClose() {
       this.dialogVisible = false

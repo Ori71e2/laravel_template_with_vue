@@ -104,7 +104,7 @@ export default {
         return this.$store.state.url.urlListTrigger
       },
       set(val) {
-        this.$store.state.url.urlListTrigger = val
+        this.$store.dispatch('url/setListTrigger', val)
       }
     },
     urlTag: {
@@ -112,9 +112,9 @@ export default {
         // const urlListTrigger = this.urlListTrigger
         return this.$store.state.url.tag
       },
-      // set(val) {
-      //   this.$store.dispatch('url/setTag', val)
-      // }
+      set(val) {
+        this.$store.dispatch('url/setTag', val)
+      }
     },
     editItemTag: {
       get() {

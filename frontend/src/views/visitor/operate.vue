@@ -20,9 +20,26 @@
       <el-tooltip :disabled="disabled" class="item" effect="dark" content="前进" placement="left">
         <i @click="forward" :class="[isForward ? activeClass : inactiveClass]" class="el-icon-arrow-right" />
       </el-tooltip>
-      <el-tooltip :disabled="disabled" class="item" effect="dark" content="保存" placement="left">
-        <i :class="[isUpdate ? activeClass : inactiveClass]" class="el-icon-circle-check" @click="save()" />
-      </el-tooltip>
+      <el-popover placement="left" width="160" v-model="confirmPopoverVisible">
+        <p>确定保存？</p>
+        <div style="text-align: right; margin: 0">
+          <el-button size="mini" type="text" @click="confirmPopoverVisible = false">取消</el-button>
+          <el-button type="primary" size="mini" @click="save()">确定</el-button>
+        </div>
+        <el-tooltip slot="reference" :disabled="disabled && !confirmPopoverVisible" class="item" effect="dark" content="保存" placement="left">
+          <i :class="[isUpdate ? activeClass : inactiveClass]" class="el-icon-circle-check" />
+        </el-tooltip>
+      </el-popover>
+      <el-popover placement="left" width="160" v-model="cancelPopoverVisible">
+        <p>确定取消？</p>
+        <div style="text-align: right; margin: 0">
+          <el-button size="mini" type="text" @click="cancelPopoverVisible = false">取消</el-button>
+          <el-button type="primary" size="mini" @click="cancel()">确定</el-button>
+        </div>
+        <el-tooltip slot="reference" :disabled="disabled && !cancelPopoverVisible" class="item" effect="dark" content="取消" placement="left">
+          <i :class="[isUpdate ? activeClass : inactiveClass]" class="el-icon-circle-close" />
+        </el-tooltip>
+      </el-popover>
     </div>
     <div v-else class="content" />
     <div slot="reference" class="button" @click="popOver"><i class="el-icon-caret-top caret" /></div>
@@ -47,7 +64,9 @@ export default {
       oldUrlList: [],
       timer: null,
       disabled: true,
-      isTag: false
+      isTag: false,
+      confirmPopoverVisible: false,
+      cancelPopoverVisible: false
     }
   },
   computed: {
@@ -59,11 +78,11 @@ export default {
         this.$store.dispatch('url/setList', val)
       }
     },
-    historyList: {
-      get() {
-        return this.$store.state.url.history.length
-      }
-    },
+    // historyList: {
+    //   get() {
+    //     return this.$store.state.url.history.length
+    //   }
+    // },
     isDrag: {
       get() {
         return this.$store.state.url.drag
@@ -134,6 +153,7 @@ export default {
     },
     setDrag() {
       this.isDrag = !this.isDrag
+      this.save()
     },
     setEdit() {
       this.isEdit =  !this.isEdit
@@ -141,6 +161,15 @@ export default {
     },
     save() {
       this.oldUrlList = JSON.parse(JSON.stringify(this.urlList))
+      // 清除完历史必须紧跟着对urlList进行赋值，这也符合历史的第一条记录是本身的逻辑
+      this.$store.dispatch('url/clearHistory')
+      this.urlList = JSON.parse(JSON.stringify(this.oldUrlList))
+    },
+    cancel() {
+      // 清除完历史必须紧跟着对urlList进行赋值，这也符合历史的第一条记录是本身的逻辑
+      this.$store.dispatch('url/clearHistory')
+      this.urlList = JSON.parse(JSON.stringify(this.oldUrlList))
+      this.cancelPopoverVisible = false
     },
     back() {
       this.$store.dispatch('url/backwardHistory')

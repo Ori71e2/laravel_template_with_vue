@@ -35,6 +35,10 @@ const mutations = {
       state.list = JSON.parse(state.history[state.index])
     }
   },
+  CLEAR_HISTORY: (state) => {
+    state.index = -1
+    state.history = []
+  },
   SET_DRAG: (state, val) => {
     state.drag = val
   },
@@ -59,6 +63,8 @@ const mutations = {
   },
   SET_LIST_TRIGGER: (state, val) => {
     state.listTrigger = val
+    state.index = state.index + 1
+    state.history.splice(state.index, state.history.length-state.index, JSON.stringify(state.list))
   }
  }
 
@@ -77,6 +83,11 @@ const actions = {
     commit
   }) {
     commit('FORWARD_HISTORY')
+  },
+  clearHistory({
+    commit
+  }) {
+    commit('CLEAR_HISTORY')
   },
   setDrag({
     commit
