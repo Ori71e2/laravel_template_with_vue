@@ -25,7 +25,6 @@
     </el-container>
     <pagenav class="pagenav" />
     <operate class="operate" />
-    <tag />
   </div>
 </template>>
 
@@ -35,11 +34,10 @@ import axios from 'axios'
 import url from './url'
 import pagenav from './pagenav'
 import operate from './operate'
-import tag from './tag'
 import { mapGetters } from 'vuex'
 export default {
   components: {
-    url, pagenav, operate, tag
+    url, pagenav, operate
   },
   data() {
     const item = {

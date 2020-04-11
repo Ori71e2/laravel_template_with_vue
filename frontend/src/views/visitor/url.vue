@@ -8,7 +8,7 @@
         <div v-for="(urlGroup, groupIndex) in urlPage.page" :key="groupIndex" :style="urlGroupStyle" class="url-group">
           <div :style="urlGroupTitleStyle" class="url-group-title">
             <span v-if="!isEdit">{{ urlGroup.title }}</span>
-            <a v-else @click="handleEdit('group', pageIndex, groupIndex, -1)">{{ urlGroup.title }}</a>
+            <a v-else @click="handleEdit('group', pageIndex, groupIndex, -1, '', '', [])">{{ urlGroup.title }}</a>
           </div>
           <draggable v-model="urlGroup.group" v-bind="urlItemDragOptions" :move="onMove" element="div" :class="urlGroupClass" :group="{ name: 'urlItem', pull: true, put: ['urlItem'] }" @end="urlItemDragEnd">
             <transition v-for="(url, urlIndex) in urlGroup.group" :key="urlIndex" name="fade">
@@ -17,7 +17,7 @@
                   <span>{{ url.title }}</span>
                 </a>
                 <a v-else>
-                  <span @click="handleEdit('url', pageIndex, groupIndex, urlIndex)">{{ url.title }}</span>
+                  <span @click="handleEdit('url', pageIndex, groupIndex, urlIndex, url.title, url.url,url.tag)">{{ url.title }}</span>
                 </a>
               </div>
             </transition>
@@ -31,26 +31,39 @@
       </draggable>
     </div>
     <el-dialog title="修改" :visible.sync="dialogVisible" width="30%" :before-close="handleClose" :append-to-body="true" style="z-index: 199!important">
-      <span>这是一段信息</span>
       <el-input v-model="editItemOnType.title" placeholder="请输入内容">
         <template slot="prepend">名称</template>
       </el-input>
       <el-input v-if="itemType === 'url'" v-model="editItemOnType.url" placeholder="请输入内容">
         <template slot="prepend">网址</template>
       </el-input>
+      <div v-if="itemType === 'url'" class="tag">
+        <el-button @click="handleUrlItemTagEdit">标签</el-button>
+        <el-tooltip class="tag-list" effect="dark" content="点击左边便签进行编辑" placement="bottom">
+          <draggable v-model="editItemTag" v-bind="dragOptions" element="div" :group="{ name: 'editTagStore', pull: false, put: ['editTagStore'] }" class="tag-list">
+            <transition v-for="tag in editItemTag" :key="tag.id" name="fade">
+              <div class="tag-item">
+                <el-tag class="item" :style="{backgroundColor: tag.color, borderColor:tag.color, color: 'white'}"> {{ tag.title }}</el-tag>
+              </div>
+            </transition>
+          </draggable>
+        </el-tooltip>
+      </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="handleClose">取 消</el-button>
         <el-button type="primary" @click="handleConfirm">确 定</el-button>
       </span>
     </el-dialog>
+    <tag :show.sync="isTag" :tag.sync="editItemTagId" />
   </div>
 </template>>
 
 <script>
 import draggable from 'vuedraggable'
+import tag from './tag'
 export default {
   components: {
-    draggable
+    draggable, tag
   },
   data() {
     return {
@@ -71,25 +84,54 @@ export default {
         urlIndex: -1,
         title: '',
         url: ''
-      }
+      },
+      editItemTagId: [],
+      isTag: false
     }
   },
   computed: {
     urlList: {
       get() {
-        const urlTagTrigger = this.urlTagTrigger
+        const urlListTrigger = this.urlListTrigger
         return this.$store.getters.urlList
       },
       set(val) {
         this.$store.dispatch('url/setList', val)
       }
     },
-    urlTagTrigger: {
+    urlListTrigger: {
       get() {
-        return this.$store.state.url.urlTagTrigger
+        return this.$store.state.url.urlListTrigger
       },
       set(val) {
-        this.$store.state.url.urlTagTrigger = val
+        this.$store.state.url.urlListTrigger = val
+      }
+    },
+    urlTag: {
+      get() {
+        // const urlListTrigger = this.urlListTrigger
+        return this.$store.state.url.tag
+      },
+      // set(val) {
+      //   this.$store.dispatch('url/setTag', val)
+      // }
+    },
+    editItemTag: {
+      get() {
+        if (this.editItemTagId.length === 0 || this.urlTag.length ===0) {
+          return []
+        } else {
+          const tag = this.editItemTagId.map((id, index) => {
+            const filterTags = this.urlTag.filter(tag => { return tag.id === id})
+            return filterTags.length > 0 ? filterTags[0] : []
+          })
+          return tag
+        }
+      },
+      set(val) {
+        if (val) {
+          this.editItemTagId = val.map(tag => { return tag.id })
+        }
       }
     },
     isDrag: {
@@ -136,7 +178,7 @@ export default {
       return {
         animation: 0,
         group: 'description',
-        // disabled: true,
+        filter: '.url-box-add',
         disabled: !this.isDrag,
         ghostClass: 'ghost'
       }
@@ -146,6 +188,14 @@ export default {
         animation: 0,
         group: 'description',
         disabled: !this.isDrag,
+        ghostClass: 'ghost'
+      }
+    },
+    dragOptions() {
+      return {
+        animation: 0,
+        group: 'description',
+        disabled: false,
         ghostClass: 'ghost'
       }
     },
@@ -205,26 +255,30 @@ export default {
       this.initWindowWidth = document.body.clientWidth
     },
     onMove({ relatedContext, draggedContext }) {
-      const relatedElement = relatedContext.element
-      const draggedElement = draggedContext.element
-      return (
-        (!relatedElement || !relatedElement.fixed) && !draggedElement.fixed
-      )
+      // Add div 区域由于未设置任何数据，无法获取相关数据内容，若要使用这个函数，做好空判断
+      // const relatedElement = relatedContext.element
+      // const draggedElement = draggedContext.element
+      // return (
+      //   (!relatedElement || !relatedElement.fixed) && !draggedElement.fixed
+      // )
     },
     urlGroupDragEnd() {
-      this.urlTagTrigger += 1
+      this.urlListTrigger += 1
     },
     urlItemDragEnd() {
-      this.urlTagTrigger += 1
+      this.urlListTrigger += 1
     },
     getWindowWidth() {
       this.initWindowWidth = document.body.clientWidth
     },
-    handleEdit(type, pageIndex, groupIndex, urlIndex) {
+    handleEdit(type, pageIndex, groupIndex, urlIndex, title, url, tag) {
       this.editItemOnType.type = type
       this.editItemOnType.urlIndex = urlIndex
       this.editItemOnType.pageIndex = pageIndex
       this.editItemOnType.groupIndex = groupIndex
+      this.editItemOnType.title = title
+      this.editItemOnType.url = url
+      this.editItemTagId = JSON.parse(JSON.stringify(tag))
       this.dialogVisible = true
     },
     handleClose() {
@@ -237,22 +291,24 @@ export default {
       const pageIndex = this.editItemOnType.pageIndex
       const groupIndex = this.editItemOnType.groupIndex
       const urlIndex = this.editItemOnType.urlIndex
+      const tag = JSON.parse(JSON.stringify(this.editItemTagId))
       // const page = JSON.parse(JSON.stringify(this.urlList[pageIndex]))
       const page = this.urlList[pageIndex]
       if (type === 'url') {
         page.page[groupIndex].group[urlIndex].url = url
         page.page[groupIndex].group[urlIndex].title = title
+        page.page[groupIndex].group[urlIndex].tag = tag
       } else if (type === 'group') {
         page.page[groupIndex].title = title
       } else if (type === 'page') {
         page.title = title
       }
       this.urlList[pageIndex] = page
-      this.urlTagTrigger += 1
+      this.urlListTrigger += 1
       this.dialogVisible = false
     },
-    setUrlList() {
-      // this.urlList = JSON.parse(JSON.stringify(this.urlList))
+    handleUrlItemTagEdit() {
+      this.isTag = true
     }
   }
 
@@ -357,5 +413,34 @@ export default {
   }
   .fade-enter, .fade-leave-to /* .fade-leave-active 在低于版本 2.1.8 中 */ {
     opacity: 0;
+  }
+  .tag {
+    width: 100%;
+    min-height: 20px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-content: flex-start;
+  }
+  .tag-list {
+    width: calc(100% - 68px);
+    min-height: 20px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-content: flex-start;
+    white-space: nowrap;
+    background: #FFF;
+    border: 1px solid #DCDFE6;
+    color: #606266;
+    text-align: center;
+    box-sizing: border-box;
+    margin: 0;
+    font-weight: 500;
+    padding: 4px 6px;
+    font-size: 14px;
+    border-radius: 4px;
   }
 </style>

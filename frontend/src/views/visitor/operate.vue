@@ -26,14 +26,16 @@
     </div>
     <div v-else class="content" />
     <div slot="reference" class="button" @click="popOver"><i class="el-icon-caret-top caret" /></div>
+    <tag :show.sync="isTag"/>
   </div>
 </template>
 
 <script>
 import draggable from 'vuedraggable'
+import tag from './tag'
 export default {
   components: {
-    draggable
+    draggable, tag
   },
   data() {
     return {
@@ -44,7 +46,8 @@ export default {
       inactiveClass: 'inactive',
       oldUrlList: [],
       timer: null,
-      disabled: true
+      disabled: true,
+      isTag: false
     }
   },
   computed: {
@@ -83,14 +86,6 @@ export default {
       },
       set(val) {
         this.$store.dispatch('url/setEdit', val)
-      }
-    },
-    isTag: {
-      get() {
-        return this.$store.state.url.tagPopOver
-      },
-      set(val) {
-        this.$store.dispatch('url/setTagPopover', val)
       }
     },
     isBack() {

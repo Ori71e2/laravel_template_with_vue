@@ -55,7 +55,10 @@ const mutations = {
     state.tagPopover = val
   },
   SET_TAG_TRIGGER: (state, val) => {
-    state.tagTrigger += val
+    state.tagTrigger = val
+  },
+  SET_LIST_TRIGGER: (state, val) => {
+    state.listTrigger = val
   }
  }
 
@@ -109,6 +112,11 @@ const actions = {
     commit
   }, val) {
     commit('SET_TAG_TRIGGER', val)
+  },
+  setListTrigger({
+    commit
+  }, val) {
+    commit('SET_LIST_TRIGGER', val)
   }
  }
 

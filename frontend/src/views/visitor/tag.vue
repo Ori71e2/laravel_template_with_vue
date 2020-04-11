@@ -1,5 +1,5 @@
 <template>
-  <el-dialog title="标签列表" :visible.sync="urlTagPopover" width="70%" model-append-to-body class="dialog-custom">
+  <el-dialog title="标签列表" :visible.sync="urlTagPopover" width="70%" :append-to-body="true" class="dialog-custom">
     <div class="main">
       <div class="tag-selected">
         <div class="delete">
@@ -56,7 +56,7 @@
       <el-button type="primary" @click="urlTagPopover = false">确 定</el-button>
     </div>
     <!-- 嵌套dialog -->
-    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="30%" append-to-body :before-close="handleClose">
+    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="30%" :append-to-body="true" :before-close="handleClose">
       <el-input placeholder="请输入内容" v-model="newTag.title">
         <template slot="prepend">标签名称</template>
       </el-input>
@@ -79,10 +79,22 @@ export default {
   components: {
     draggable
   },
+  props: {
+    show: {
+      type: Boolean,
+      default: false
+    },
+    tag: {
+      type: Array,
+      default: () => {
+        return []
+      }
+    }
+  },
   data() {
     return {
       search: '',
-      tagIdSelected: ['T15860802459600'],
+      // urlTagIdSelected: ['T15860802459600'],
       // 用来存放Tag的，数据无实际意义
       tagSelectedDeleted: [],
       tagEdit: [],
@@ -133,12 +145,20 @@ export default {
         this.$message({message: '搜索结果不可拖拽排序',center: true, duration: '1000'})
       }
     },
+    urlTagIdSelected: {
+      get() {
+        return this.tag
+      },
+      set(val) {
+        this.$emit('update:tag', val)
+      }
+    },
     urlTagSelected: {
       get() {
-        if (this.tagIdSelected.length === 0 || this.urlTag.length ===0) {
+        if (this.urlTagIdSelected.length === 0 || this.urlTag.length ===0) {
           return []
         } else {
-          const tag = this.tagIdSelected.map((id, index) => {
+          const tag = this.urlTagIdSelected.map((id, index) => {
             const filterTags = this.urlTag.filter(tag => { return tag.id === id})
             return filterTags.length > 0 ? filterTags[0] : []
           })
@@ -147,16 +167,16 @@ export default {
       },
       set(val) {
         if (val) {
-          this.tagIdSelected = val.map(tag => { return tag.id })
+          this.urlTagIdSelected = val.map(tag => { return tag.id })
         }
       }
     },
     urlTagPopover: {
       get() {
-        return this.$store.state.url.tagPopover
+        return this.show
       },
       set(val) {
-        this.$store.dispatch('url/setTagPopover', val)
+        this.$emit('update:show', val)
       }
     },
     dragOptions() {
@@ -187,9 +207,9 @@ export default {
     },
     clone(e) {
       this.cloneTag = { ...e }
-      if(this.tagIdSelected.length === 0) {
+      if(this.urlTagIdSelected.length === 0) {
         return { ...e }
-      } else if(this.tagIdSelected.every(id => { return id != this.cloneTag.id })) {
+      } else if(this.urlTagIdSelected.every(id => { return id != this.cloneTag.id })) {
         return { ...e }
       }
     },
