@@ -20,21 +20,23 @@
       <el-tooltip :disabled="disabled" class="item" effect="dark" content="前进" placement="left">
         <i @click="forward" :class="[isForward ? activeClass : inactiveClass]" class="el-icon-arrow-right" />
       </el-tooltip>
+      <!-- 保存更改过的url list -->
       <el-popover placement="left" width="160" v-model="confirmPopoverVisible">
         <p>确定保存？</p>
         <div style="text-align: right; margin: 0">
           <el-button size="mini" type="text" @click="confirmPopoverVisible = false">取消</el-button>
-          <el-button type="primary" size="mini" @click="save()">确定</el-button>
+          <el-button type="primary" size="mini" @click="confirmSaveList()">确定</el-button>
         </div>
         <el-tooltip slot="reference" :disabled="disabled && !confirmPopoverVisible" class="item" effect="dark" content="保存" placement="left">
           <i :class="[isUpdate ? activeClass : inactiveClass]" class="el-icon-circle-check" />
         </el-tooltip>
       </el-popover>
+      <!-- 取消更改过的url list -->
       <el-popover placement="left" width="160" v-model="cancelPopoverVisible">
         <p>确定取消？</p>
         <div style="text-align: right; margin: 0">
           <el-button size="mini" type="text" @click="cancelPopoverVisible = false">取消</el-button>
-          <el-button type="primary" size="mini" @click="cancel()">确定</el-button>
+          <el-button type="primary" size="mini" @click="cancelSaveList()">确定</el-button>
         </div>
         <el-tooltip slot="reference" :disabled="disabled && !cancelPopoverVisible" class="item" effect="dark" content="取消" placement="left">
           <i :class="[isUpdate ? activeClass : inactiveClass]" class="el-icon-circle-close" />
@@ -61,7 +63,6 @@ export default {
       history: [],
       activeClass: 'active',
       inactiveClass: 'inactive',
-      oldUrlList: [],
       timer: null,
       disabled: true,
       isTag: false,
@@ -78,11 +79,6 @@ export default {
         this.$store.dispatch('url/setList', val)
       }
     },
-    // historyList: {
-    //   get() {
-    //     return this.$store.state.url.history.length
-    //   }
-    // },
     isDrag: {
       get() {
         return this.$store.state.url.drag
@@ -108,25 +104,13 @@ export default {
       }
     },
     isBack() {
-      return this.$store.state.url.index <= 0 ? false : true
+      return this.$store.state.url.listIndex <= 0 ? false : true
     },
     isForward() {
-      return this.$store.state.url.index >= this.$store.state.url.history.length-1 ? false : true
+      return this.$store.state.url.listIndex >= this.$store.state.url.listHistory.length-1 ? false : true
     },
     isUpdate() {
-      const oldString = JSON.stringify(this.oldUrlList)
-      const newString = JSON.stringify(this.urlList)
-      const oldLen = oldString.length
-      const newLen = newString.length
-      if (this.oldUrlList.length != 0) {
-        if (oldLen != newLen) {
-          return true
-        } else {
-          return oldString != newString
-        }
-      } else {
-        return false
-      }
+      return this.$store.state.url.listHistory.length > 1 ? true : false
     },
     isRecycleBinEmpty() {
       return this.recycleBin.length == 0
@@ -153,29 +137,27 @@ export default {
     },
     setDrag() {
       this.isDrag = !this.isDrag
-      this.save()
     },
     setEdit() {
       this.isEdit =  !this.isEdit
-      this.save()
     },
-    save() {
-      this.oldUrlList = JSON.parse(JSON.stringify(this.urlList))
-      // 清除完历史必须紧跟着对urlList进行赋值，这也符合历史的第一条记录是本身的逻辑
-      this.$store.dispatch('url/clearHistory')
-      this.urlList = JSON.parse(JSON.stringify(this.oldUrlList))
+    confirmSaveList() {
+      this.$store.dispatch('url/saveList').then(() => {
+        this.$message.success('保存成功')
+        this.confirmPopoverVisible = false
+      }).catch((error) => {
+        this.$message.error('保存失败')
+      })
     },
-    cancel() {
-      // 清除完历史必须紧跟着对urlList进行赋值，这也符合历史的第一条记录是本身的逻辑
-      this.$store.dispatch('url/clearHistory')
-      this.urlList = JSON.parse(JSON.stringify(this.oldUrlList))
+    cancelSaveList() {
+      this.$store.dispatch('url/cancelSaveList')
       this.cancelPopoverVisible = false
     },
     back() {
-      this.$store.dispatch('url/backwardHistory')
+      this.$store.dispatch('url/backwardListHistory')
     },
     forward() {
-      this.$store.dispatch('url/forwardHistory')
+      this.$store.dispatch('url/forwardListHistory')
     },
     setTag() {
       this.isTag = !this.isTag

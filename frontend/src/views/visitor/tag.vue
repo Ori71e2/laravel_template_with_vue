@@ -1,7 +1,7 @@
 <template>
-  <el-dialog title="标签列表" :visible.sync="urlTagPopover" width="70%" :append-to-body="true" class="dialog-custom">
+  <el-dialog title="标签列表" :visible.sync="urlTagPopover" width="70%" :append-to-body="true" class="dialog-custom" :before-close="cancelUrlTagUpdate">
     <div class="main">
-      <div class="tag-selected">
+      <div v-show="isSelectMode" class="tag-selected">
         <div class="delete">
           <div class="icon"><i class="el-icon-delete" /></div>
           <draggable v-model="tagSelectedDeleted" v-bind="dragOptions" element="div" :group="{name: 'tag', put: ['urlTagSelected']}" class="drag" />
@@ -13,6 +13,10 @@
             </div>
           </transition>
         </draggable>
+      </div>
+      <div v-show="isSelectMode" style="text-align: right;padding: 10px 20px 10px;">
+        <el-button @click="cancelTagProp">取 消</el-button>
+        <el-button type="primary" @click="confirmTagProp">保 存</el-button>
       </div>
       <div class="tag-search">
         <el-input placeholder="请输入内容" v-model="search" class="input-with-select">
@@ -50,10 +54,10 @@
           </transition>
         </draggable>
       </div>
-    </div>
-    <div slot="footer" class="dialog-footer">
-      <el-button @click="urlTagPopover = false">取 消</el-button>
-      <el-button type="primary" @click="urlTagPopover = false">确 定</el-button>
+      <div style="text-align: right;padding: 10px 20px 10px;">
+        <el-button @click="cancelUrlTagUpdate">取 消</el-button>
+        <el-button type="primary" @click="confirmUrlTagUpdate">保 存</el-button>
+      </div>
     </div>
     <!-- 嵌套dialog -->
     <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="30%" :append-to-body="true" :before-close="handleClose">
@@ -73,7 +77,6 @@
 </template>
 
 <script>
-import { getUrlTag } from '@/api/url'
 import draggable from 'vuedraggable'
 export default {
   components: {
@@ -90,10 +93,11 @@ export default {
         return []
       }
     },
+    // 'select' 'manage'
     type: {
       type: String,
       default: () => {
-        return ''
+        return 'manage'
       }
     }
   },
@@ -105,6 +109,8 @@ export default {
       tagSelectedDeleted: [],
       tagEdit: [],
       tagDeleted: [],
+      propTag: [],
+      urlTagOld: [],
       // dialog变量
       dialogTitle: '',
       dialogVisible: false,
@@ -131,6 +137,7 @@ export default {
         return this.$store.state.url.tag
       },
       set(val) {
+        
         this.$store.dispatch('url/setTag', val)
       }
     },
@@ -153,10 +160,10 @@ export default {
     },
     urlTagIdSelected: {
       get() {
-        return this.tag
+        return this.propTag
       },
       set(val) {
-        this.$emit('update:tag', val)
+        this.propTag = val
       }
     },
     urlTagSelected: {
@@ -195,13 +202,18 @@ export default {
     },
     newTagValidate() {
       return this.validate()
-    }
+    },
+    isSelectMode() {
+      return this.type === 'select'
+    },
+    isUpdate() {
+      return this.$store.state.url.tagHistory.length > 1 ? true : false
+    },
   },
   created() {
-    getUrlTag().then(response => {
-      this.urlTag = JSON.parse(response.data)
-      this.$store.dispatch('url/setTag', this.urlTag)
-    })
+  },
+  mounted() {
+    this.propTag = JSON.parse(JSON.stringify(this.tag))
   },
   methods: {
     onMove({ relatedContext, draggedContext }) {
@@ -285,6 +297,50 @@ export default {
         }
       }
       this.urlTag = urlTag
+    },
+    cancelTagProp() {
+      if(this.isUpdate === false) {
+        this.urlTagPopover = false
+      } else {
+        this.$notify({
+          title: '提示',
+          type: 'warning',
+          message: '请先保存标签库！',
+          position: 'bottom-right',
+          duration: 500
+        })
+      }
+    },
+    confirmTagProp() {
+      if(this.isUpdate === false) {
+        this.$emit('update:tag', this.propTag)
+        this.urlTagPopover = false
+      } else {
+        this.$notify({
+          title: '提示',
+          type: 'warning',
+          message: '请先保存标签库！',
+          position: 'bottom-right',
+          // duration: 5000
+        })
+      }
+    },
+    cancelUrlTagUpdate() {
+      if (this.isUpdate === false) {
+        this.urlTagPopover = false
+      } else {
+        this.$store.dispatch('url/cancelSaveTag')
+        this.urlTagPopover = false
+      }
+    },
+    confirmUrlTagUpdate() {
+      // 提交网络，保存成功后方可关闭弹出框
+      this.$store.dispatch('url/saveTag').then(() => {
+        this.$message.success('保存成功')
+        this.urlTagPopover = false
+      }).catch((error) => {
+        this.$message.error('保存失败')
+      })
     },
     handleClose() {
       this.dialogVisible = false
@@ -381,6 +437,7 @@ $operateWidth: 60px;
 .tag-store {
   width: 100%;
   height: calc(100% - #{$searchHeight} - #{$tagSelectedHeight} - 10px);
+  flex-grow: 1;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;

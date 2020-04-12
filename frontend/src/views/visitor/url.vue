@@ -1,7 +1,7 @@
 
 <template>
   <div :style="urlListStyle" class="url-list">
-    {{ this.$store.getters.urlList }}
+    <!-- {{ this.$store.getters.urlList }} -->
     <div v-for="(urlPage, pageIndex) in urlList" :key="pageIndex" :ref="'anchor' + pageIndex">
       <!-- <div :ref="'anchor' + pageIndex" style="display: none;"></div> -->
       <draggable v-model="urlPage.page" v-bind="urlGroupDragOptions" :move="onMove" element="div" :group="{ name: 'urlGroup', pull: true, put: ['urlGroup'] }" @end="urlGroupDragEnd">
@@ -54,7 +54,7 @@
         <el-button type="primary" @click="handleConfirm">确 定</el-button>
       </span>
     </el-dialog>
-    <tag :show.sync="isTag" :tag.sync="editItemTagId" />
+    <tag :show.sync="isTag" :tag.sync="editItemTagId" type="select"/>
   </div>
 </template>>
 

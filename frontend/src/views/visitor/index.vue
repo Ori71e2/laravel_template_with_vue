@@ -30,6 +30,7 @@
 
 <script>
 import { getUrlPageList } from '@/api/url'
+import { getUrlTag } from '@/api/url'
 import axios from 'axios'
 import url from './url'
 import pagenav from './pagenav'
@@ -47,9 +48,9 @@ export default {
     }
     return {
       tableData: Array(20).fill(item),
-      urlPageList: [],
       edit: false,
-      position: 0
+      position: 0,
+      loading: true
     }
   },
   computed: {
@@ -58,9 +59,17 @@ export default {
     ]),
   },
   created() {
-    getUrlPageList().then(response => {
-      this.urlPageList = JSON.parse(response.data)
-      this.$store.dispatch('url/setList', this.urlPageList)
+    this.$store.dispatch('url/getList').then(() => {
+      this.loading = false
+    }).catch((error) => {
+      // const result = error.response.code
+      this.$message.error('获取网址信息失败')
+    })
+    this.$store.dispatch('url/getTag').then(() => {
+      this.loading = false
+    }).catch((error) => {
+      // const result = error.response.code
+      this.$message.error('获取网址信息失败')
     })
   }
 }
