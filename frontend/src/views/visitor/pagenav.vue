@@ -133,7 +133,8 @@ export default {
   overflow: auto;
 }
 .url-page-title {
-  border: solid 1px red;
+  // border: 1px solid #d8dce5;
+  // box-shadow: 0 1px 4px rgba(0,21,41,.08);
   box-sizing: content-box;
   border-radius: 2px;
   margin: 3px 1px;

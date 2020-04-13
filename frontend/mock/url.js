@@ -12,7 +12,7 @@ for(let i =0; i< 20; i++) {
 // let base = 1586080245960
 let urlList = []
 let images = [1,2,3].map(x=>Random.image('200x100', Random.color(), Random.word(2,6)));
-for (let k = 0; k<2; k++) {
+for (let k = 0; k<20; k++) {
   let page = []
   for(let m = 0; m < 2; m++) {
     let group = []

@@ -3,27 +3,17 @@
   <div>
     <el-container style="height: 100%; border: 1px solid #eee">
       <el-header>
-        <div>
-          <el-dropdown>
-            <i class="el-icon-setting" style="margin-right: 10px" />
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item>查看</el-dropdown-item>
-              <el-dropdown-item>新增</el-dropdown-item>
-              <el-dropdown-item>删除</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-          <div style="width: 40px; margin: 0px 10px"><span>王小虎</span></div>
-        </div>
-        <div class="transiton" />
+        <navbar class="navbar"/>
+        <div class="transition" />
       </el-header>
       <el-container>
-        <el-aside width="200px" />
+        <el-aside width="220px" />
         <el-main>
           <url />
         </el-main>
       </el-container>
     </el-container>
-    <pagenav class="pagenav" />
+    <div class="pagenavContainer"><pagenav class="pagenav" /></div>
     <operate class="operate" />
   </div>
 </template>>
@@ -35,10 +25,11 @@ import axios from 'axios'
 import url from './url'
 import pagenav from './pagenav'
 import operate from './operate'
+import navbar from './navbar'
 import { mapGetters } from 'vuex'
 export default {
   components: {
-    url, pagenav, operate
+    url, pagenav, operate, navbar
   },
   data() {
     const item = {
@@ -89,21 +80,16 @@ $headerHeight: 80px;
     justify-content: flex-end;
     align-items: center;
     z-index: 100;
-    div:first-child {
+    .navbar {
       height: $headerHeight - 20px;
       width: 100%;
-      background-color: #B3C0D1;
+      background-color: white;
+      border-bottom: 1px solid #d8dce5;
+      box-shadow: 0 1px 4px rgba(0,21,41,.08);
       color: #333;
       line-height: $headerHeight - 20px;
-      text-align: right;
-      font-size: 12px;
-      display: flex;
-      flex-direction: row;
-      flex-wrap: nowrap;
-      justify-content: flex-end;
-      align-items: center;
     }
-    .transiton {
+    .transition {
       width: 100%;
       height: 20px;
       background-image: linear-gradient(to top, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1))
@@ -119,19 +105,54 @@ $headerHeight: 80px;
     background-color: #F5F6F8;
     z-index: 99;
   }
-  .pagenav {
+  .pagenavContainer {
     position: fixed;
     top: $headerHeight;
-    left: 20px;
+    padding-right: 10px;
+    left: 40px;
+    padding: 20px 20px 10px 0px;
     width: 200px;
     height: calc(100vh - #{$headerHeight} - 20px);
-    border: solid 1px red;
+    border-right: 1px solid #d8dce5;
+    box-shadow: 0 1px 4px rgba(0,21,41,.08);
     z-index: 100;
+    .pagenav {
+      width: 180px;
+      height: calc(100vh - #{$headerHeight} - 20px - 40px);
+      overflow: hidden;
+      padding-right: 4px;
+      &:hover {
+        overflow: auto;
+      }
+      &::-webkit-scrollbar-track
+      {
+        box-shadow: inset 0 0 1px rgba(0,0,0,0.3);
+        border-radius: 10px;
+        background-color: #F5F5F5;
+      }
+      &::-webkit-scrollbar
+      {
+        width: 8px;
+        background-color: #F5F5F5;
+      }
+      &::-webkit-scrollbar-thumb
+      {
+        border-radius: 2px;
+        // box-shadow: inset 0 0 1px rgba(0,0,0,.3);
+        background-color: rgba(96,98,102,0.3);
+        &:hover {
+          background-color: rgba(96,98,102,0.5);
+        }
+        &:active {
+          background-color: rgba(96,98,102,0.8);
+        }
+      }
+    }
   }
   .operate {
     position: fixed;
     // top: calc((100vh - #{$headerHeight})/2);
-    bottom: 400px;
+    bottom: 200px;
     right: 25px;
     margin-right: 10px;
     width: 20px;

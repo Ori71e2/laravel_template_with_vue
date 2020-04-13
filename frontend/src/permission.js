@@ -58,7 +58,10 @@ router.beforeEach(async(to, from, next) => {
     /* has no token*/
 
     if (whiteList.indexOf(to.path) !== -1) {
-      // in the free login whitelist, go directly
+      // in the free whitelist, go directly
+      // if (to.path === 'login') {
+      //   store.dispatch('user/setDialogVisual', true)
+      // }
       next()
       NProgress.done()
     } else {

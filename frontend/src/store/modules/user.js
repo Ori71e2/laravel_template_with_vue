@@ -7,7 +7,8 @@ const state = {
   name: '',
   avatar: '',
   roles: [],
-  permissions: []
+  permissions: [],
+  dialogVisiual: true
 }
 
 const mutations = {
@@ -25,6 +26,9 @@ const mutations = {
   },
   SET_PREMISSIONS: (state, permissions) => {
     state.permissions = permissions
+  },
+  SET_DIALOG_VISIUAL: (state, val) => {
+    state.dialogVisiual = val
   }
 }
 
@@ -95,6 +99,10 @@ const actions = {
       removeToken()
       resolve()
     })
+  },
+
+  setDialogVisual({ commit }, vla) {
+    commit(SET_DIALOG_VISIUAL, val)
   }
 }
 

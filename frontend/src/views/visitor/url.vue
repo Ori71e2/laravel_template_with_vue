@@ -2,7 +2,7 @@
 <template>
   <div :style="urlListStyle" class="url-list">
     <!-- {{ this.$store.getters.urlList }} -->
-    <div v-for="(urlPage, pageIndex) in urlList" :key="pageIndex" :ref="'anchor' + pageIndex">
+    <div v-for="(urlPage, pageIndex) in urlList" :key="pageIndex" :ref="'anchor' + pageIndex" class="url-page">
       <!-- <div :ref="'anchor' + pageIndex" style="display: none;"></div> -->
       <draggable v-model="urlPage.page" v-bind="urlGroupDragOptions" :move="onMove" element="div" :group="{ name: 'urlGroup', pull: true, put: ['urlGroup'] }" @end="urlGroupDragEnd">
         <div v-for="(urlGroup, groupIndex) in urlPage.page" :key="groupIndex" :style="urlGroupStyle" class="url-group">
@@ -327,14 +327,21 @@ export default {
     flex-direction: column;
     flex-wrap: nowrap;
     margin: 0px auto;
+    .url-page:nth-of-type(odd) {
+      // border
+      margin-bottom: 20px;
+      border-bottom: 3px solid #909399;
+      box-shadow: 0 1px 4px rgba(0,21,41,.08);
+    }
   }
   .url-group {
-    border-width: 1px;
-    border-style: solid;
-    border-color: red;
+    border: 1px solid #d8dce5;
+    box-shadow: 0 1px 4px rgba(0,21,41,.08);
+    margin: 4px 0px;
     .url-group-title {
       box-sizing: content-box;
-      border: solid $urlItemDivBorder red;
+      // border: 1px solid #d8dce5;
+      // box-shadow: 0 1px 4px rgba(0,21,41,.08);
       border-radius: 2px;
       margin-left: $urlItemDivMarginLR;
       margin-right: $urlItemDivMarginLR;
@@ -377,7 +384,8 @@ export default {
     }
   }
   .url-box {
-    border: solid red;
+    // border: 1px solid #d8dce5;
+    // box-shadow: 0 1px 4px rgba(0,21,41,.08);
     box-sizing: content-box;
     border-radius: 2px;
     margin: 3px $urlItemDivMarginLR;
@@ -406,7 +414,8 @@ export default {
     }
   }
   .url-box-add {
-    border: dashed 1px red;
+    border: 1px solid #d8dce5;
+    box-shadow: 0 1px 4px rgba(0,21,41,.08);
   }
   .fade-enter-active, .fade-leave-active {
     transition: opacity .5s;
