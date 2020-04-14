@@ -8,10 +8,10 @@
           <div><i class="el-icon-caret-bottom" /></div>
         </div>
         <el-dropdown-menu slot="dropdown">
-          <router-link to="/login">
+          <router-link to="/visitor/login">
             <el-dropdown-item>登录</el-dropdown-item>
           </router-link>
-          <router-link to="/register">
+          <router-link to="/visitor/register">
             <el-dropdown-item>注册</el-dropdown-item>
           </router-link>
           <el-dropdown-item divided>
@@ -24,7 +24,7 @@
       <router-view />
       <span slot="footer" class="dialog-footer">
       <el-button @click="dialogVisible = false">关 闭</el-button>
-      <el-button type="primary" @click="dialogVisible = false">保 存</el-button>
+      <el-button type="primary" @click="handleSave">保 存</el-button>
       </span>
     </el-dialog>
   </div>
@@ -46,9 +46,12 @@ export default {
   computed: {
     dialogVisible: {
       get() {
+        // return true
+        console.log(this.$store.state.user.dialogVisible)
         return this.$store.state.user.dialogVisible
       },
       set(val) {
+        this.$store.dispatch('user/setDialogVisible', val)
       }
     }
   },
@@ -56,6 +59,10 @@ export default {
     async logout() {
       // await this.$store.dispatch('user/logout')
       // this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    },
+    handleSave() {
+      this.$router.go(-1)
+      this.dialogVisible = false
     }
   }
 }

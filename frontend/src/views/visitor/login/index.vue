@@ -1,6 +1,6 @@
 <template>
   <div class="navbar">
-    Test
+    Login
   </div>
 </template>
 <script>

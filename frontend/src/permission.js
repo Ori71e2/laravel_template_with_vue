@@ -8,7 +8,7 @@ import getPageTitle from '@/utils/get-page-title'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
-const whiteList = ['/login', '/visitor'] // no redirect whitelist
+const whiteList = ['/visitor/login', '/visitor/register'] // no redirect whitelist
 
 router.beforeEach(async(to, from, next) => {
   // start progress bar
@@ -56,18 +56,13 @@ router.beforeEach(async(to, from, next) => {
     }
   } else {
     /* has no token*/
-
+    console.log(to.path)
     if (whiteList.indexOf(to.path) !== -1) {
-      // in the free whitelist, go directly
-      // if (to.path === 'login') {
-      //   store.dispatch('user/setDialogVisual', true)
-      // }
+      store.dispatch('user/setDialogVisible', true)
       next()
       NProgress.done()
     } else {
-      // other pages that do not have permission to access are redirected to the login page.
-      // next(`/login?redirect=${to.path}`)
-      next('/visitor')
+      next()
       NProgress.done()
     }
   }

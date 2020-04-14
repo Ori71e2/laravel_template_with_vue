@@ -8,7 +8,7 @@ const state = {
   avatar: '',
   roles: [],
   permissions: [],
-  dialogVisiual: true
+  dialogVisible: false
 }
 
 const mutations = {
@@ -27,8 +27,8 @@ const mutations = {
   SET_PREMISSIONS: (state, permissions) => {
     state.permissions = permissions
   },
-  SET_DIALOG_VISIUAL: (state, val) => {
-    state.dialogVisiual = val
+  SET_DIALOG_VISIBLE: (state, val) => {
+    state.dialogVisible = val
   }
 }
 
@@ -101,8 +101,8 @@ const actions = {
     })
   },
 
-  setDialogVisual({ commit }, vla) {
-    commit(SET_DIALOG_VISIUAL, val)
+  setDialogVisible({ commit }, val) {
+    commit('SET_DIALOG_VISIBLE', val)
   }
 }
 

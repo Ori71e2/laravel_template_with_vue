@@ -22,10 +22,10 @@
 import { getUrlPageList } from '@/api/url'
 import { getUrlTag } from '@/api/url'
 import axios from 'axios'
-import url from './url'
-import pagenav from './pagenav'
-import operate from './operate'
-import navbar from './navbar'
+import url from './components/url'
+import pagenav from './components/pagenav'
+import operate from './components/operate'
+import navbar from './components/navbar'
 import { mapGetters } from 'vuex'
 export default {
   components: {
