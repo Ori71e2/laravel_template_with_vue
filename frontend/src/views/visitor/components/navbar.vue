@@ -20,10 +20,10 @@
         </el-dropdown-menu>
       </el-dropdown>
     </div>
-    <el-dialog title="Test" :visible="dialogVisible" width="30%" :append-to-body="true">
+    <el-dialog :visible="dialogVisible" width="30%" :append-to-body="true" :show-close="false">
       <router-view />
       <span slot="footer" class="dialog-footer">
-      <el-button @click="dialogVisible = false">关 闭</el-button>
+      <el-button @click="handleClose">关 闭</el-button>
       <el-button type="primary" @click="handleSave">保 存</el-button>
       </span>
     </el-dialog>
@@ -63,7 +63,11 @@ export default {
     handleSave() {
       this.$router.go(-1)
       this.dialogVisible = false
-    }
+    },
+    handleClose() {
+      this.$router.go(-1)
+      this.dialogVisible = false
+    },
   }
 }
 </script>

@@ -1,46 +1,24 @@
-import fetch from '@/utils/fetch'
+import request from '@/utils/request'
 
 export function login(data) {
-    return fetch({
-        url: '/api/login',
-        method: 'post',
-        data: {
-            email: data.username,
-            password: data.password
-        }
-    })
+  return request({
+    url: '/user/login',
+    method: 'post',
+    data
+  })
 }
 
-export function loginWithThree(username, password, platformId, provider) {
-    return fetch({
-        url: '/api/loginWithThree',
-        method: 'post',
-        data: {
-            email: username,
-            password,
-            platformId,
-            provider
-        }
-    })
-}
-
-export function getInfo() {
-    return fetch({
-        url: '/api/user',
-        method: 'get'
-    })
+export function getInfo(token) {
+  return request({
+    url: '/user/info',
+    method: 'get',
+    params: { token }
+  })
 }
 
 export function logout() {
-    return fetch({
-        url: '/api/logout',
-        method: 'post'
-    })
-}
-
-export function loginToken() {
-    return fetch({
-        url: '/api/token/refresh',
-        method: 'post'
-    })
+  return request({
+    url: '/user/logout',
+    method: 'post'
+  })
 }
