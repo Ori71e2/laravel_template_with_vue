@@ -17,6 +17,9 @@
           <el-dropdown-item divided>
             <span style="display:block;" @click="logout">注销</span>
           </el-dropdown-item>
+          <el-dropdown-item divided>
+            <span style="display:block;" @click="post">Post</span>
+          </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
@@ -59,9 +62,12 @@ export default {
       // this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     },
     handleClose() {
-      this.$router.go(-1)
       this.dialogVisible = false
+      this.$router.go(-1)
     },
+    post() {
+      this.$store.dispatch('user/getInfo')
+    }
   }
 }
 </script>

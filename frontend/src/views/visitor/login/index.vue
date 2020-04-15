@@ -39,9 +39,7 @@
           <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
         </span>
       </el-form-item>
-
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登录</el-button>
-
     </el-form>
   </div>
 </template>
@@ -80,9 +78,14 @@ export default {
     }
   },
   computed: {
-    docAddress() {
-      const hostURL = process.env.VUE_APP_BASE_API
-      return hostURL + 'showdoc/web/#/1'
+    dialogVisible: {
+      get() {
+        // return true
+        return this.$store.state.user.dialogVisible
+      },
+      set(val) {
+        this.$store.dispatch('user/setDialogVisible', val)
+      }
     }
   },
   watch: {
@@ -109,7 +112,6 @@ export default {
         if (valid) {
           this.loading = true
           this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.go('/')
             this.loading = false
             this.skipToMain()
           }).catch((error) => {
@@ -128,8 +130,11 @@ export default {
       })
     },
     skipToMain() {
-      this.$router.go(-1)
+      // 刷新
+      this.$router.go('/')
       this.dialogVisible = false
+      // 不刷新
+      // this.$router.go(-1)
     },
   }
 }

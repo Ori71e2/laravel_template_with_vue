@@ -13,9 +13,8 @@ router.beforeEach(async(to, from, next) => {
   NProgress.start()
   console.log(to.path)
   // determine whether the user has logged in
-  const hasToken = getToken()
-  if (hasToken) {
-    console.log(hasToken)
+  const token = store.getters.token
+  if (token) {
     try {
       // get user info
       // const UserInfo = await store.dispatch('user/getInfo')
@@ -36,7 +35,6 @@ router.beforeEach(async(to, from, next) => {
   } else {
     /* has no token*/
     if (whiteList.indexOf(to.path) !== -1) {
-      console.log(store)
       store.dispatch('user/setDialogVisible', true)
       next()
       NProgress.done()

@@ -134,7 +134,8 @@ const actions = {
   getList({ commit }) {
     return new Promise((resolve, reject) => {
       getUrlList().then(response => {
-        const list = JSON.parse(response.data)
+        const {code, data} = response
+        const list = JSON.parse(data)
         commit('INIT_LIST', list)
         resolve()
       }).catch(error => {
@@ -145,7 +146,8 @@ const actions = {
   getTag({ commit }) {
     return new Promise((resolve, reject) => {
       getUrlTag().then(response => {
-        const tag = JSON.parse(response.data)
+        const {code, data} = response
+        const tag = JSON.parse(data)
         commit('INIT_TAG', tag)
         resolve()
       }).catch(error => {

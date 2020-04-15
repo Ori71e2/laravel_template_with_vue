@@ -26,21 +26,23 @@ const userJwtOptions = {
   "exp": ~~(Date.now() / 1000) + (60*60)
 }
 const privateKey = "11111111"
-const users = {
+
+const JWTOKEN = jwt.sign(userJwtOptions, privateKey)
+
+const users = {}
+users[JWTOKEN] = {
   introduction: 'I am a super administrator',
   name: 'Super Admin'
 }
-const JWTOKEN = jwt.sign(userJwtOptions, privateKey)
-
 export default [
   // user login
   {
     url: '/user/login',
     type: 'post',
     response: config => {
-      const { username } = config.body
+      const { username, password } = config.body
       const token = JWTOKEN
-
+      console.log(config.body)
       // mock error
       if (!token) {
         return {
@@ -58,12 +60,13 @@ export default [
 
   // get user info
   {
-    url: '/user/info\.*',
-    type: 'get',
+    url: '/user/info',
+    type: 'post',
     response: config => {
-      const { token } = config.query
-      const info = users
-
+      const { token } = config.body
+      const info = users[token]
+      console.log('info')
+      console.log(config.body)
       // mock error
       if (!info) {
         return {
