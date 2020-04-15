@@ -24,7 +24,6 @@
       <router-view />
       <span slot="footer" class="dialog-footer">
       <el-button @click="handleClose">关 闭</el-button>
-      <el-button type="primary" @click="handleSave">保 存</el-button>
       </span>
     </el-dialog>
   </div>
@@ -47,7 +46,6 @@ export default {
     dialogVisible: {
       get() {
         // return true
-        console.log(this.$store.state.user.dialogVisible)
         return this.$store.state.user.dialogVisible
       },
       set(val) {
@@ -57,12 +55,8 @@ export default {
   },
   methods: {
     async logout() {
-      // await this.$store.dispatch('user/logout')
+      await this.$store.dispatch('user/logout')
       // this.$router.push(`/login?redirect=${this.$route.fullPath}`)
-    },
-    handleSave() {
-      this.$router.go(-1)
-      this.dialogVisible = false
     },
     handleClose() {
       this.$router.go(-1)

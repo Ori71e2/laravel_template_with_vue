@@ -1,6 +1,5 @@
 import router from './router'
 import store from './store'
-import { Message } from 'element-ui'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
 import { getToken } from '@/utils/auth' // get token from cookie
@@ -12,11 +11,11 @@ const whiteList = ['/visitor/login', '/visitor/register'] // no redirect whiteli
 router.beforeEach(async(to, from, next) => {
   // start progress bar
   NProgress.start()
-
+  console.log(to.path)
   // determine whether the user has logged in
   const hasToken = getToken()
-
   if (hasToken) {
+    console.log(hasToken)
     try {
       // get user info
       // const UserInfo = await store.dispatch('user/getInfo')
@@ -36,8 +35,8 @@ router.beforeEach(async(to, from, next) => {
     }
   } else {
     /* has no token*/
-    console.log(to.path)
     if (whiteList.indexOf(to.path) !== -1) {
+      console.log(store)
       store.dispatch('user/setDialogVisible', true)
       next()
       NProgress.done()
