@@ -6,35 +6,37 @@ import { getToken } from '@/utils/auth' // get token from cookie
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
-const whiteList = ['/visitor/login', '/visitor/register'] // no redirect whitelist
-
+const noTokenRouteList = ['/visitor/login', '/visitor/register', '/visitor/verify']
+const hasTokenRouteList = ['/visitor/verify']
 router.beforeEach(async(to, from, next) => {
-  // start progress bar
+
   NProgress.start()
-  console.log(to.path)
-  // determine whether the user has logged in
   const token = store.getters.token
+  const verify = store.state.user.verify
+  const vip = store.state.user.vip
+  const listVip = store.state.url.listVip
   if (token) {
-    try {
-      // get user info
-      // const UserInfo = await store.dispatch('user/getInfo')
-      if (whiteList.indexOf(to.path) !== -1) {
-        next({ path: '/' })
-        NProgress.done()
-      } else {
-        next()
-        NProgress.done()
+    // 已登录且路由去向为login、register
+    if (noTokenRouteList.indexOf(to.path) !== -1) {
+      next({ path: '/' })
+      NProgress.done()
+    // 已登录未验证账户且路由去向为verify
+    } else if (!verify && hasTokenRouteList.indexOf(to.path) !== -1){
+      store.dispatch('user/setDialogVisible', true)
+      next({ path: '/' })
+      NProgress.done()
+    } else {
+      if (!vip && !listVip) {
+        store.dispatch('url/getList')
+        store.dispatch('url/getTag')
+        console.log('VIP')
       }
-    } catch (error) {
-      // remove token and go to login page to re-login
-      // await store.dispatch('user/resetToken')
-      // Message.error(error || 'Has Error')
       next()
       NProgress.done()
     }
   } else {
-    /* has no token*/
-    if (whiteList.indexOf(to.path) !== -1) {
+    // 未登录且路由去向为login、register
+    if (noTokenRouteList.indexOf(to.path) !== -1) {
       store.dispatch('user/setDialogVisible', true)
       next()
       NProgress.done()

@@ -3,14 +3,14 @@ import request from '@/utils/request'
 export function getUrlList() {
   return request({
     url: '/url/getList',
-    method: 'get'
+    method: 'post'
   })
 }
 
 export function getUrlTag() {
   return request({
     url: '/url/getTag',
-    method: 'get'
+    method: 'post'
   })
 }
 

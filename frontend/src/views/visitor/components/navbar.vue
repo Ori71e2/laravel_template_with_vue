@@ -8,11 +8,14 @@
           <div><i class="el-icon-caret-bottom" /></div>
         </div>
         <el-dropdown-menu slot="dropdown">
-          <router-link to="/visitor/login">
+          <router-link v-show="showLogin" to="/visitor/login">
             <el-dropdown-item>登录</el-dropdown-item>
           </router-link>
-          <router-link to="/visitor/register">
+          <router-link v-show="showRegister" to="/visitor/register">
             <el-dropdown-item>注册</el-dropdown-item>
+          </router-link>
+          <router-link v-show="showVerify" to="/visitor/verify">
+            <el-dropdown-item>验证</el-dropdown-item>
           </router-link>
           <el-dropdown-item divided>
             <span style="display:block;" @click="logout">注销</span>
@@ -53,6 +56,27 @@ export default {
       },
       set(val) {
         this.$store.dispatch('user/setDialogVisible', val)
+      }
+    },
+    showLogin: {
+      get() {
+        return !this.$store.state.user.login
+      },
+      set(val) {
+        // this.$store.dispatch('user/setLogin', val)
+      }
+    },
+    showRegister: {
+      get() {
+        return !this.$store.state.user.login
+      },
+      set(val) {
+        // this.$store.dispatch('user/setLogin', val)
+      }
+    },
+    showVerify: {
+      get() {
+        return this.$store.state.user.login && !this.$store.state.user.verify
       }
     }
   },

@@ -8,6 +8,14 @@ export function login(data) {
   })
 }
 
+export function verify(data) {
+  return request({
+    url: '/user/verify',
+    method: 'post',
+    data
+  })
+}
+
 export function getInfo() {
   return request({
     url: '/user/info',

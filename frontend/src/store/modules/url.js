@@ -1,6 +1,7 @@
 import { getUrlList, getUrlTag, saveUrlList, saveUrlTag } from '@/api/url'
 
 const state = {
+  listVip: false,
   list: [],
   tag: [],
   listTrigger: 0,
@@ -17,6 +18,9 @@ const state = {
 }
 // listHistory listIndex 与list一起初始化及变更， listIndex 指向当前历史
 const mutations = {
+  SETLISTVIP: (state, listVip) => {
+    state.listVip = listVip
+  },
   INIT_LIST: (state, list) => {
     // state.list =  JSON.parse(JSON.stringify(list))
     state.list =  list
@@ -131,6 +135,9 @@ const mutations = {
  }
 
 const actions = {
+  setListVip({ commit }, listVip) {
+    commit('SET_LIST_VIP', listVip)
+ },
   getList({ commit }) {
     return new Promise((resolve, reject) => {
       getUrlList().then(response => {

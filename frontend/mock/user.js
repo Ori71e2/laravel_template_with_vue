@@ -42,7 +42,7 @@ export default [
     response: config => {
       const { username, password } = config.body
       const token = JWTOKEN
-      console.log(config.body)
+      // console.log(config.body)
       // mock error
       if (!token) {
         return {
@@ -57,6 +57,25 @@ export default [
       }
     }
   },
+  // 按理来说，可以不需要传递username参数，登录成功后token为唯一用户凭证
+  {
+    url: '/user/verify',
+    type: 'post',
+    response: config => {
+      const { username, code } = config.body
+      if (code !== 8888) {
+        return {
+          code: 60204,
+          message: 'bad verification code'
+        }
+      }
+
+      return {
+        code: 20000,
+        data: true
+      }
+    }
+  },
 
   // get user info
   {
@@ -65,8 +84,6 @@ export default [
     response: config => {
       const { token } = config.body
       const info = users[token]
-      console.log('info')
-      console.log(config.body)
       // mock error
       if (!info) {
         return {

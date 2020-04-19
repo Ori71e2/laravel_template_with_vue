@@ -31,6 +31,10 @@ export const constantRoutes = [
       {
         path: 'register',
         component: () => import('@/views/visitor/register/index')
+      },
+      {
+        path: 'verify',
+        component: () => import('@/views/visitor/verify/index')
       }
     ]
   },
