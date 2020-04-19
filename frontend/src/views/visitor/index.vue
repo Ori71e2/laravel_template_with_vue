@@ -50,18 +50,18 @@ export default {
     ]),
   },
   created() {
-    this.$store.dispatch('url/getList').then(() => {
-      this.loading = false
-    }).catch((error) => {
-      // const result = error.response.code
-      this.$message.error('获取网址信息失败')
-    })
-    this.$store.dispatch('url/getTag').then(() => {
-      this.loading = false
-    }).catch((error) => {
-      // const result = error.response.code
-      this.$message.error('获取网址信息失败')
-    })
+    // this.$store.dispatch('url/getList').then(() => {
+    //   this.loading = false
+    // }).catch((error) => {
+    //   // const result = error.response.code
+    //   this.$message.error('获取网址信息失败')
+    // })
+    // this.$store.dispatch('url/getTag').then(() => {
+    //   this.loading = false
+    // }).catch((error) => {
+    //   // const result = error.response.code
+    //   this.$message.error('获取网址信息失败')
+    // })
   }
 }
 </script>

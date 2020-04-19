@@ -3,9 +3,6 @@ import Router from 'vue-router'
 
 Vue.use(Router)
 
-/* Layout */
-import Layout from '@/layout'
-
 /**
  * constantRoutes
  * a base page that does not have permission requirements
@@ -60,5 +57,6 @@ const router = createRouter()
 //   const newRouter = createRouter()
 //   router.matcher = newRouter.matcher // reset router
 // }
+
 
 export default router

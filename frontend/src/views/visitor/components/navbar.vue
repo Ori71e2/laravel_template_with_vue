@@ -60,7 +60,7 @@ export default {
     },
     showLogin: {
       get() {
-        return !this.$store.state.user.login
+        return !this.$store.state.user.token || this.$store.state.user.token === ''
       },
       set(val) {
         // this.$store.dispatch('user/setLogin', val)
@@ -68,7 +68,7 @@ export default {
     },
     showRegister: {
       get() {
-        return !this.$store.state.user.login
+        return !this.$store.state.user.token || this.$store.state.user.token === ''
       },
       set(val) {
         // this.$store.dispatch('user/setLogin', val)
@@ -76,7 +76,7 @@ export default {
     },
     showVerify: {
       get() {
-        return this.$store.state.user.login && !this.$store.state.user.verify
+        return (this.$store.state.user.token && this.$store.state.user.token !== '') && !this.$store.state.user.verify
       }
     }
   },
@@ -84,6 +84,18 @@ export default {
     async logout() {
       await this.$store.dispatch('user/logout')
       // this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+      // this.$store.dispatch('url/getList').then(() => {
+      //   this.loading = false
+      // }).catch((error) => {
+      //   // const result = error.response.code
+      //   this.$message.error('获取网址信息失败')
+      // })
+      // this.$store.dispatch('url/getTag').then(() => {
+      //   this.loading = false
+      // }).catch((error) => {
+      //   // const result = error.response.code
+      //   this.$message.error('获取网址信息失败')
+      // })
     },
     handleClose() {
       this.dialogVisible = false

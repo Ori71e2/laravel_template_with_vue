@@ -18,7 +18,7 @@ const state = {
 }
 // listHistory listIndex 与list一起初始化及变更， listIndex 指向当前历史
 const mutations = {
-  SETLISTVIP: (state, listVip) => {
+  SET_LIST_VIP: (state, listVip) => {
     state.listVip = listVip
   },
   INIT_LIST: (state, list) => {
@@ -144,7 +144,7 @@ const actions = {
         const {code, data} = response
         const list = JSON.parse(data)
         commit('INIT_LIST', list)
-        resolve()
+        resolve(true)
       }).catch(error => {
         reject(error)
       })
@@ -156,7 +156,7 @@ const actions = {
         const {code, data} = response
         const tag = JSON.parse(data)
         commit('INIT_TAG', tag)
-        resolve()
+        resolve(true)
       }).catch(error => {
         reject(error)
       })

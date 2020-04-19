@@ -99,7 +99,7 @@ export default [
     type: 'post',
     response: config => {
       const { token } = config.body
-      console.log(token)
+      console.log(config.body)
       if (token) {
         return {
           code: 20000,

@@ -4,12 +4,11 @@ import router, { resetRouter } from '@/router'
 
 const state = {
   vip: 0,
-  token: '',
+  token: getToken(),
   verified: false,
   name: '',
   introduction: '',
   dialogVisible: false,
-  login: false,
   verify: false,
 }
 
@@ -31,9 +30,6 @@ const mutations = {
   },
   SET_DIALOG_VISIBLE: (state, visible) => {
     state.dialogVisible = visible
-  },
-  SET_LOGIN: (state, login) => {
-    state.login = login
   }
 }
 
@@ -48,7 +44,7 @@ const actions = {
       login({ username: username.trim(), password: password }).then(response => {
         const {code, data} = response
         commit('SET_TOKEN', data)
-        commit('SET_LOGIN', true)
+        setToken(data.token)
         resolve()
       }).catch(error => {
         reject(error)
@@ -77,9 +73,7 @@ const actions = {
         if (!data) {
           reject('Verification failed, please Login again.')
         }
-
         const { name, introduction } = data
-
         commit('SET_NAME', name)
         commit('SET_INTRODUCTION', introduction)
         resolve(data)
@@ -93,7 +87,9 @@ const actions = {
     return new Promise((resolve, reject) => {
       logout(state.token).then(() => {
         commit('SET_TOKEN', '')
-        commit('SET_LOGIN', false)
+        commit('SET_NAME', '')
+        commit('SET_INTRODUCTION', '')
+        removeToken()
         resolve()
       }).catch(error => {
         reject(error)

@@ -9,7 +9,7 @@ NProgress.configure({ showSpinner: false }) // NProgress Configuration
 const noTokenRouteList = ['/visitor/login', '/visitor/register', '/visitor/verify']
 const hasTokenRouteList = ['/visitor/verify']
 router.beforeEach(async(to, from, next) => {
-
+  console.log('to path: ' + to.path)
   NProgress.start()
   const token = store.getters.token
   const verify = store.state.user.verify
@@ -26,9 +26,12 @@ router.beforeEach(async(to, from, next) => {
       next({ path: '/' })
       NProgress.done()
     } else {
-      if (!vip && !listVip) {
-        store.dispatch('url/getList')
-        store.dispatch('url/getTag')
+      if (!listVip) {
+        const flag1 = await store.dispatch('url/getList')
+        const flag2 = await store.dispatch('url/getTag')
+        if(flag1 && flag2) {
+          store.dispatch('url/setListVip', true)
+        }
         console.log('VIP')
       }
       next()
@@ -41,6 +44,8 @@ router.beforeEach(async(to, from, next) => {
       next()
       NProgress.done()
     } else {
+      store.dispatch('url/getList')
+      store.dispatch('url/getTag')
       next()
       NProgress.done()
     }
