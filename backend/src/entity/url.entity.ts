@@ -10,4 +10,7 @@ export class Url {
 
   @Column({ length: 524288 })
   tag: string;
+
+  @Column()
+  updatetime: number;
 }
