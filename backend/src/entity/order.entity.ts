@@ -5,14 +5,11 @@ export class Url {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 10485760 })
-  list: string;
-
-  @Column({ length: 524288 })
-  tag: string;
+  @Column({ length: 1024 })
+  payjs: string;
 
   @Column()
-  updatetime: number;
+  createtime: number;
 
   @Column()
   userId: number;

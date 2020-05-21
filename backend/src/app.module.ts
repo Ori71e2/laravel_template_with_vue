@@ -8,7 +8,8 @@ import { UrlModule } from './url/url.module';
     TypeOrmModule.forRoot(),
     UserModule,
     UrlModule
-  ]
+  ],
+  controllers: []
 })
 export class AppModule {
   constructor(private readonly connection: Connection) {}

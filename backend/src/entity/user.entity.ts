@@ -8,7 +8,7 @@ export class User {
   @Column({ length: 100 })
   name: string;
 
-  @Column({ length: 100 })
+  @Column({ length: 100, unique: true })
   account: string;
 
   @Column({ length: 2048 })
@@ -18,8 +18,14 @@ export class User {
   vip: number;
 
   @Column()
+  vipExpiretime: number;
+
+  @Column()
   isActive: boolean;
 
   @Column()
-  expiretime: number;
+  activeCode: number;
+
+  @Column()
+  activeCodeExpiretime: number;
 }
