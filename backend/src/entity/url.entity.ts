@@ -5,15 +5,27 @@ export class Url {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 10485760 })
+  @Column({ type: 'blob' })
   list: string;
 
-  @Column({ length: 524288 })
+  @Column({ type: 'blob' })
   tag: string;
 
   @Column()
   updatetime: number;
 
-  @Column()
+  @Column({ unique: true })
   userId: number;
+  
+  constructor(list: string, tag?: string, updatetime?: number, userId?: number)
+  constructor(list: string, tag: string, updatetime?: number, userId?: number)
+  constructor(list: string, tag: string, updatetime: number, userId?: number)
+  constructor(list: string, tag: string, updatetime: number, userId: number)
+  constructor(list?: string, tag?: string, updatetime?: number, userId?: number)
+  constructor(list?: string, tag?: string, updatetime?: number, userId?: number) {
+    this.list = list || '';
+    this.tag = tag || '';
+    this.updatetime = updatetime || 0;
+    this.userId = userId || 0
+  }
 }
