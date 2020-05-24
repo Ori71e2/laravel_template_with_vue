@@ -17,15 +17,42 @@ export class UrlService {
   }
 
   async insertOne(url: UrlDTO): Promise<boolean> {
-    let flag: boolean
     const newUrl = this.urlRepository.create(url);
-    try {
-      await this.urlRepository.save(newUrl)
-      flag = true
-    } catch(e) {
-      console.log(e)
-      flag = false
-    }
-    return flag
+    return await this.urlRepository.insert(newUrl).then(() => { return true}).catch(() => { return false});
+  }
+
+
+  async deleteOne(url: UrlDTO): Promise<boolean> {
+    // const { id } = url;
+    return await this.urlRepository.delete(url).then(() => { return true}).catch(() => { return false});
+  }
+
+  async updateByUserId(url: UrlDTO): Promise<boolean> {
+    const { id } = url;
+    return await this.urlRepository.update({ id }, url).then(() => { return true}).catch(() => { return false});
+  }
+
+  async updateTagByUserId(url: UrlDTO): Promise<boolean> {
+    const { userId, tag} = url;
+    return this.urlRepository
+    .createQueryBuilder('tag')
+    .update()
+    .set({ tag: tag })
+    .where({ userId: userId })
+    .execute()
+    .then(() => { return true })
+    .catch(() => { return false });
+  }
+
+  async updateListByUserId(url: UrlDTO): Promise<boolean> {
+    const { userId, list} = url;
+    return this.urlRepository
+    .createQueryBuilder('list')
+    .update()
+    .set({ list: list })
+    .where({ userId: userId })
+    .execute()
+    .then(() => { return true })
+    .catch(() => { return false });
   }
 }

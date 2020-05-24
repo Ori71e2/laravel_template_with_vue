@@ -23,6 +23,14 @@ describe('Url Service', () => {
     find: jest.fn().mockResolvedValue(urlArray),
     findOneOrFail: jest.fn().mockResolvedValue(oneUrl),
     save: jest.fn(),
+    insert: jest.fn().mockResolvedValue(true),
+    update: jest.fn().mockResolvedValue(true),
+    createQueryBuilder: jest.fn(() => ({
+      update: jest.fn().mockReturnThis(),
+      set: jest.fn().mockReturnThis(),
+      where: jest.fn().mockReturnThis(),
+      execute: jest.fn().mockResolvedValue(true)
+    }))
   }
 
   beforeEach(async () => {
@@ -63,13 +71,47 @@ describe('Url Service', () => {
           userId: testUserId1
         })
       ).resolves.toEqual(true);
-      expect(repo.create).toBeCalledTimes(1);
-      expect(repo.create).toBeCalledWith({
-        list: 'list1', 
-        tag: 'tag1',
-        updatetime: 1, 
-        userId: testUserId1
-      })
+      expect(repo.insert).toBeCalledTimes(1);
+      done();
+    });
+  })
+
+  describe('update tag and list by user id', () => {
+    it('update tag and list', async (done) => {
+      expect(
+        service.updateByUserId({
+          list: 'list1',
+          tag: 'tag1',
+          userId: testUserId1
+        })
+      ).resolves.toEqual(true);
+      expect(repo.update).toBeCalledTimes(1);
+      done();
+    });
+  })
+
+  describe('update tag by user id', () => {
+    it('update tag', async (done) => {
+      expect(
+        service.updateListByUserId({
+          tag: 'tag1',
+          userId: testUserId1
+        })
+      ).resolves.toEqual(true);
+      expect(repo.createQueryBuilder).toBeCalledTimes(1);
+      done();
+    });
+  })
+
+  describe('update list by user id', () => {
+    it('update list', async (done) => {
+      expect(
+        service.updateListByUserId({
+          list: 'list1',
+          userId: testUserId1
+        })
+      ).resolves.toEqual(true);
+      expect(repo.createQueryBuilder).toBeCalledTimes(2);
       done();
     });
   })
@@ -77,4 +119,4 @@ describe('Url Service', () => {
   //   let res = await service.addList(0)
   //   expect(res).toEqual(true);
   // });
-});
+})
