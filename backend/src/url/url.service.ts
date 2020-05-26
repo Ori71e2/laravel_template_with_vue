@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { UrlDTO } from './url.dto';
+import { UrlDto } from './url.dto';
 import { Url } from '../entity';
 
 @Injectable()
@@ -16,23 +16,23 @@ export class UrlService {
     return url;
   }
 
-  async insertOne(url: UrlDTO): Promise<boolean> {
+  async insertOne(url: UrlDto): Promise<boolean> {
     const newUrl = this.urlRepository.create(url);
     return await this.urlRepository.insert(newUrl).then(() => { return true}).catch(() => { return false});
   }
 
 
-  async deleteOne(url: UrlDTO): Promise<boolean> {
+  async deleteOne(url: UrlDto): Promise<boolean> {
     // const { id } = url;
     return await this.urlRepository.delete(url).then(() => { return true}).catch(() => { return false});
   }
 
-  async updateByUserId(url: UrlDTO): Promise<boolean> {
+  async updateByUserId(url: UrlDto): Promise<boolean> {
     const { id } = url;
     return await this.urlRepository.update({ id }, url).then(() => { return true}).catch(() => { return false});
   }
 
-  async updateTagByUserId(url: UrlDTO): Promise<boolean> {
+  async updateTagByUserId(url: UrlDto): Promise<boolean> {
     const { userId, tag} = url;
     return this.urlRepository
     .createQueryBuilder('tag')
@@ -44,7 +44,7 @@ export class UrlService {
     .catch(() => { return false });
   }
 
-  async updateListByUserId(url: UrlDTO): Promise<boolean> {
+  async updateListByUserId(url: UrlDto): Promise<boolean> {
     const { userId, list} = url;
     return this.urlRepository
     .createQueryBuilder('list')

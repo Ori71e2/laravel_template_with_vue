@@ -1,6 +1,6 @@
 import { Controller, Post, Response, Body, HttpStatus} from '@nestjs/common';
 import { UrlService } from './url.service'
-import { UrlDTO } from './url.dto';
+import { UrlDto } from './url.dto';
 import { Url } from '../entity';
 
 @Controller('url')
@@ -19,13 +19,13 @@ export class UrlController {
 
   @Post('updateTagByUserId')
   async updateTagByUserId(@Response() res, @Body() body) {
-    let url: UrlDTO = { id: 0, tag: body.tag }
+    let url: UrlDto = { id: 0, tag: body.tag }
     res.status(HttpStatus.OK).json(await this.urlService.updateTagByUserId(url));
   }
 
   @Post('updateListByUserId')
   async updateListByUserId(@Response() res, @Body() body) {
-    let url: UrlDTO = { id: 0, list: body.list }
+    let url: UrlDto = { id: 0, list: body.list }
     res.status(HttpStatus.OK).json(await this.urlService.updateListByUserId(url));
   }
 }
