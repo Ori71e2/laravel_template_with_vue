@@ -9,13 +9,16 @@ export class User {
   name: string;
 
   @Column({ length: 100, unique: true })
-  account: string;
+  email: string;
 
   @Column({ length: 2048 })
   password: string;
 
   @Column()
   vip: number;
+
+  @Column()
+  roles: string;
 
   @Column()
   vipExpiretime: number;

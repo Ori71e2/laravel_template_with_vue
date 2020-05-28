@@ -1,9 +1,10 @@
 export interface UserDto {
   id?: number;
   name?: string;
-  account?: string;
+  email?: string;
   password?: string;
   vip?: number;
+  roles?: string;
   vipExpiretime?: number;
   isActive?: boolean;
   activeCode?: number;

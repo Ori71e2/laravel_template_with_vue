@@ -3,14 +3,11 @@ import {default as config} from '../config';
 import { Injectable} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, InsertResult } from 'typeorm';
-import { UserDto } from '../user/user.dto';
+import { UserDto } from '../user/dto/user.dto';
 import { User } from '../entity';
 @Injectable()
 export class JWTService {
-  constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-  ) {}
+  constructor(@InjectRepository(User) private readonly userRepository: Repository<User>) {}
 
   async createToken(email, roles) {
     const expiresIn = config.jwt.expiresIn,
@@ -24,9 +21,9 @@ export class JWTService {
   }
 
   async validateUser(signedUser): Promise<User> {
-    var userFromDb = await this.userRepository.findOne({ account: signedUser.email});
-    if (userFromDb) {
-        return userFromDb;
+    var user = await this.userRepository.findOne({ email: signedUser.email});
+    if (user) {
+        return user;
     }
     return null;
   }
