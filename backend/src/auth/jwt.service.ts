@@ -9,9 +9,9 @@ import { User } from '../entity';
 export class JWTService {
   constructor(@InjectRepository(User) private readonly userRepository: Repository<User>) {}
 
-  async createToken(email, roles) {
-    const expiresIn = config.jwt.expiresIn,
-      secretOrKey = config.jwt.secretOrKey;
+  async createToken(email: string, roles: string) {
+    const expiresIn = config.jwt.expiresIn;
+    const secretOrKey = config.jwt.secretOrKey;
     const userInfo = { email: email, roles: roles};
     const token = jwt.sign(userInfo, secretOrKey, { expiresIn });
     return {
@@ -20,7 +20,7 @@ export class JWTService {
     };
   }
 
-  async validateUser(signedUser): Promise<User> {
+  async validateUser(signedUser: any): Promise<User> {
     var user = await this.userRepository.findOne({ email: signedUser.email});
     if (user) {
         return user;

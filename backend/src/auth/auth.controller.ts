@@ -28,9 +28,9 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async register(@Body() createUserDto: CreateUserDto): Promise<IResponse> {
     try {
-      var newUser = await this.userService.register(createUserDto);
+      let newUser = await this.userService.register(createUserDto);
       await this.authService.createEmailToken(newUser.email);
-      var sent = await this.authService.sendEmailVerification(newUser.email);
+      let sent = await this.authService.sendEmailVerification(newUser.email);
       if(sent){
         return new ResponseSuccess("REGISTRATION.USER_REGISTERED_SUCCESSFULLY");
       } else {
